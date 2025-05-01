@@ -52,7 +52,7 @@ SET /p SZGB="Size (GB): "
 SET /a SZMB=%SZGB% * 1024
 
 IF EXIST %VHD% SET /P YN="파일이 존재합니다. 그래도 생성하시겠습니까? (Y/N): "
-IF /I NOT "%YN%" == "Y" goto:eof
+IF EXIST %VHD% IF /I NOT "%YN%" == "Y" goto:eof
 
 (
 echo create vdisk file="%VHD%" type=expandable maximum=%SZMB%
@@ -111,7 +111,7 @@ goto:eof
 SET /p CVHD="Child VHD 파일명: "
 
 IF EXIST %CVHD% SET /P YN="파일이 존재합니다. 그래도 생성하시겠습니까? (Y/N): "
-IF /I NOT "%YN%" == "Y" goto:eof
+IF EXIST %CVHD% IF /I NOT "%YN%" == "Y" goto:eof
 
 (
 echo select vdisk file="%VHD%"
