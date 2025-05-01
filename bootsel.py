@@ -1,4 +1,5 @@
 import subprocess
+import sys
 import tkinter as tk
 from tkinter import messagebox
 import ctypes
@@ -48,7 +49,7 @@ def is_admin():
 
 if not is_admin():
     messagebox.showerror("권한 오류", "이 프로그램은 관리자 권한으로 실행되어야 합니다.")
-    exit()
+    sys.exit()
 
 entries = get_bcd_entries()
 identifiers = []
@@ -86,5 +87,6 @@ x = (screen_width // 2) - (width // 2)
 y = (screen_height // 2) - (height // 2)
 
 root.geometry(f"{width}x{height}+{x}+{y}")
+root.resizable(False, False)
 
 root.mainloop()
