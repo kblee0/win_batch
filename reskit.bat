@@ -27,7 +27,9 @@ echo * 기타
 echo 15. 드라이브백업                  16. 드라이브복원
 echo 17. Win11 Setup check bypass      18. 인터넷 연결없이 설치
 echo 19. 업데이트 백업파일 제거        20. Bluetooth Keys Regedit
-echo 21. Office 2024 KMS인증
+echo.
+echo * 인증
+echo 21. Windows 10/11 Pro KMS인증     22. Office KMS인증
 echo.
 echo --------------------------------------------------------------------------
 echo.
@@ -297,7 +299,24 @@ SET INET_HST=kms.digiboy.ir
 
 SET /P IN_HST="KMS Host (INET:%INET_HST% -> 127.0.0.1): "
 
-IF "%IN_HST%" == "" EXIT /B
+IF "%IN_HST%" == "" goto:eof
+SET HST=%IN_HST%
+IF /i "%IN_HST%" == "INET" SET HST=%INET_HST%
+
+cscript %SystemRoot%\System32\slmgr.vbs /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX
+cscript %SystemRoot%\System32\slmgr.vbs /skms %HST%
+cscript %SystemRoot%\System32\slmgr.vbs /ato
+
+pause
+
+goto:eof
+
+:mainmenu_22
+SET INET_HST=kms.digiboy.ir
+
+SET /P IN_HST="KMS Host (INET:%INET_HST% -> 127.0.0.1): "
+
+IF "%IN_HST%" == "" goto:eof
 SET HST=%IN_HST%
 IF /i "%IN_HST%" == "INET" SET HST=%INET_HST%
 
