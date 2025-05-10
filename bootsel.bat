@@ -2,8 +2,8 @@
 setlocal enabledelayedexpansion
 
 :check_admin
-Reg.exe query "HKU\S-1-5-19\Environment" >nul 2>&1
-If Not %ERRORLEVEL% EQU 0 (
+net session >nul 2>&1
+if %errorlevel% neq 0 (
 	if exist %SystemRoot%\system32\sudo.exe (
 		sudo --inline %0
 	) else (
@@ -68,8 +68,12 @@ if %errorlevel% neq 0 (
 echo 성공적으로 설정되었습니다.
 
 echo.
-echo 5초후에 재부팅 합니다.
-timeout /t 5 /nobreak
+CHOICE /T 5 /N /C yn /D n /M "5초 후 재부팅 합니다. 취소하시겠습니까? (Y/N): "
+
+if %errorlevel% equ 1 (
+	echo 재부팅이 취소 되었습니다.
+	goto :eof
+)
 
 echo 재부팅을 시작합니다.
 shutdown /r /t 0
