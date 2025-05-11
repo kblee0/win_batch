@@ -1,11 +1,19 @@
 @echo off
-setlocal
 setlocal enabledelayedexpansion
+
+:check_admin
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+	if exist %SystemRoot%\system32\sudo.exe (
+		sudo --inline %~f0
+	) else (
+		Echo You must have administrator rights to continue ...
+	)
+	Exit /B																									
+)
 
 for %%i in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) DO IF "!HLOCAL!" == "" IF EXIST %%i:\home\local SET HLOCAL=%%i:\home\local
 
-goto :check_admin
- 
 :main
 cls
 
