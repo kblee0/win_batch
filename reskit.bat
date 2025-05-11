@@ -336,12 +336,3 @@ IF /i "%IN_HST%" == "INET" cscript "C:\Program Files\Microsoft Office\Office16\o
 pause
 
 goto:eof
-
-
-:check_admin
-Reg.exe query "HKU\S-1-5-19\Environment"
-If Not %ERRORLEVEL% EQU 0 (
- Echo You must have administrator rights to continue ... 
- Exit /B																									
-)
-goto :main
