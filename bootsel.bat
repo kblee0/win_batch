@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 net session >nul 2>&1
 if %errorlevel% neq 0 (
 	if exist %SystemRoot%\system32\sudo.exe (
-		sudo --inline %0
+		sudo --inline %~f0
 	) else (
 		Echo You must have administrator rights to continue ...
 	)
