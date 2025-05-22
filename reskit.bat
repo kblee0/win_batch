@@ -75,8 +75,8 @@ goto:eof
 
 :mainmenu_3
 echo 다운로드 Savezone 비활성화
-REM ; 다운로드하는 파일의 보안 정보 저장
-REM ; 0이면 저장, 1이면 저장 안 함.
+:: 다운로드하는 파일의 보안 정보 저장
+:: 0이면 저장, 1이면 저장 안 함.
 Reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" /v "SaveZoneInformation" /t REG_DWORD /d "1" /f
 Reg.exe add "HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" /v "SaveZoneInformation" /t REG_DWORD /d "1" /f
 
@@ -125,6 +125,20 @@ Reg.exe add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" /v "ShowFr
 Reg.exe add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" /v "ShowCloudFilesInQuickAccess" /t REG_DWORD /d "0" /f
 Reg.exe add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "ShowTaskViewButton" /t REG_DWORD /d "0" /f
 Reg.exe add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d "1" /f
+
+:: zip/cap folder disable
+Reg.exe delete "HKCR\CABFolder\CLSID" /f
+Reg.exe delete "HKCR\CompressedFolder\CLSID" /f
+Reg.exe delete "HKCR\SystemFileAssociations\.cab\CLSID" /f
+Reg.exe delete "HKCR\SystemFileAssociations\.zip\CLSID" /f
+for %%i in (.7z .bz2 .gz .rar .tar .tbz2 .tgz .txz .tzst .xz .zst) do Reg.exe delete "HKCR\SystemFileAssociations\%%i\CLSID" /f
+
+:: zip/cap folder enable
+:: Reg.exe add "HKCR\CABFolder\CLSID" /ve /t REG_SZ /d "{0CD7A5C0-9F37-11CE-AE65-08002B2E1262}" /f
+:: Reg.exe add "HKCR\CompressedFolder\CLSID" /ve /t REG_SZ /d "{E88DCCE0-B7B3-11d1-A9F0-00AA0060FA31}" /f
+:: Reg.exe add "HKCR\SystemFileAssociations\.cab\CLSID" /ve /t REG_SZ /d "{0CD7A5C0-9F37-11CE-AE65-08002B2E1262}" /f
+:: Reg.exe add "HKCR\SystemFileAssociations\.zip\CLSID" /ve /t REG_SZ /d "{E88DCCE0-B7B3-11d1-A9F0-00AA0060FA31}" /f
+:: for %%i in (.7z .bz2 .gz .rar .tar .tbz2 .tgz .txz .tzst .xz .zst) do echo Reg.exe add "HKCR\SystemFileAssociations\%%i\CLSID" /ve /t REG_SZ /d "{0C1FD748-B888-443D-9EC3-AD7E22D48808}" /f
 
 taskkill /F /IM explorer.exe
 explorer.exe
@@ -198,29 +212,29 @@ SET APPS=^
 powershell -Command "Get-AppxPackage -AllUsers | Where-Object { $_.Name -in @( %APPS% ) } | Remove-AppxPackage"
 
 
-REM Microsoft.WindowsMaps
-REM sc delete MapsBroker
-REM sc delete lfsvc
-REM schtasks /Change /TN "\Microsoft\Windows\Maps\MapsUpdateTask" /disable
-REM schtasks /Change /TN "\Microsoft\Windows\Maps\MapsToastTask" /disable
-REM Remove Package
-REM Get-AppxPackage -allusers *Microsoft.Office.Sway* | Remove-AppxPackage
-REM Get-AppxPackage -allusers *Microsoft.Office.Desktop* | Remove-AppxPackage
-REM Get-AppxPackage -allusers MicrosoftTeams | Remove-AppxPackage
-REM Get-AppxPackage -allusers *3dbuilder* | Remove-AppxPackage
-REM Get-AppxPackage -AllUsers *onenote* | Remove-AppxPackage
-REM Get-AppxPackage -AllUsers Disney.37853FC22B2CE  | Remove-AppxPackage
-REM Get-AppxPackage -AllUsers *SkypeApp* | Remove-AppxPackage
-REM Get-AppxPackage -AllUsers *SpotifyAB.SpotifyMusic* | Remove-AppxPackage
-REM Get-AppxPackage -AllUsers *xbox* | Remove-AppxPackage
-REM sc delete XblAuthManager
-REM sc delete XblGameSave
-REM sc delete XboxNetApiSvc
-REM sc delete XboxGipSvc
-REM reg delete "HKLM\SYSTEM\CurrentControlSet\Services\xbgm" /f
-REM schtasks /Change /TN "Microsoft\XblGameSave\XblGameSaveTask" /disable
-REM schtasks /Change /TN "Microsoft\XblGameSave\XblGameSaveTaskLogon" /disable
-REM reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" /v AllowGameDVR /t REG_DWORD /d 0 /f
+:: Microsoft.WindowsMaps
+:: sc delete MapsBroker
+:: sc delete lfsvc
+:: schtasks /Change /TN "\Microsoft\Windows\Maps\MapsUpdateTask" /disable
+:: schtasks /Change /TN "\Microsoft\Windows\Maps\MapsToastTask" /disable
+:: Remove Package
+:: Get-AppxPackage -allusers *Microsoft.Office.Sway* | Remove-AppxPackage
+:: Get-AppxPackage -allusers *Microsoft.Office.Desktop* | Remove-AppxPackage
+:: Get-AppxPackage -allusers MicrosoftTeams | Remove-AppxPackage
+:: Get-AppxPackage -allusers *3dbuilder* | Remove-AppxPackage
+:: Get-AppxPackage -AllUsers *onenote* | Remove-AppxPackage
+:: Get-AppxPackage -AllUsers Disney.37853FC22B2CE  | Remove-AppxPackage
+:: Get-AppxPackage -AllUsers *SkypeApp* | Remove-AppxPackage
+:: Get-AppxPackage -AllUsers *SpotifyAB.SpotifyMusic* | Remove-AppxPackage
+:: Get-AppxPackage -AllUsers *xbox* | Remove-AppxPackage
+:: sc delete XblAuthManager
+:: sc delete XblGameSave
+:: sc delete XboxNetApiSvc
+:: sc delete XboxGipSvc
+:: reg delete "HKLM\SYSTEM\CurrentControlSet\Services\xbgm" /f
+:: schtasks /Change /TN "Microsoft\XblGameSave\XblGameSaveTask" /disable
+:: schtasks /Change /TN "Microsoft\XblGameSave\XblGameSaveTaskLogon" /disable
+:: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" /v AllowGameDVR /t REG_DWORD /d 0 /f
 pause
 goto:eof
 
