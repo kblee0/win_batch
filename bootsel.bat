@@ -29,16 +29,19 @@ for /f "tokens=1,* delims= " %%A in ('bcdedit') do (
 
     if /i "!key!"=="identifier" (
         set "identifier=!value!"
+        set "description="
+        set "device="
     ) else if /i "!key!"=="description" (
         set "description=!value!"
     ) else if /i "!key!"=="device" (
         set "device=!value!"
     )
 
-    if defined identifier if defined description if defined device (
-        if /i not "!identifier!"=="{bootmgr}" if /i not "!description!"=="Windows Boot Manager" (
+    if not "!identifier!"=="" if not "!description!" == "" if not "!device!" == "" (
+        if /i not "!identifier!"=="{bootmgr}" (
             call :PrintAligned !index! "!description!" "!device!"
 			set "id[!index!]=!identifier!"
+			set "indexchoice=!indexchoice!!index!"
             set /a index+=1
         )
         set "identifier="
@@ -48,37 +51,47 @@ for /f "tokens=1,* delims= " %%A in ('bcdedit') do (
 )
 
 echo.
-set /p choice="기본 부팅 항목 No : "
+choice /n /c !indexchoice!0 /M "기본 부팅 항목 (0: 취소): "
+
+set choice=%errorlevel%
 
 if not defined id[%choice%] (
-    echo 해당 No에 해당하는 부팅 항목이 없습니다.
     goto :eof
 )
 
 set "selectedID=!id[%choice%]!"
 
-echo 선택된 ID(!selectedID!)를 기본 부팅 항목으로 설정 중...
-bcdedit /default !selectedID! >nul 2>&1
-
-if %errorlevel% neq 0 (
-    echo 오류: bcdedit 기본 부팅 항목 설정 실패.
-    goto :eof
-)
-
-echo 성공적으로 설정되었습니다.
-
 echo.
-CHOICE /T 5 /N /C yn /D n /M "5초 후 재부팅 합니다. 취소하시겠습니까? (Y/N): "
+choice /n /c 120 /M "1. 기본설정후 재시작, 2. 임시부팅, 0, 취소 ? "
+echo.
 
 if %errorlevel% equ 1 (
-	echo 재부팅이 취소 되었습니다.
-	goto :eof
+	echo 선택된 ID^(%selectedID%^)를 기본 부팅 항목으로 설정합니다...
+	bcdedit /default %selectedID% >nul 2>&1
+	if !errorlevel! neq 0 (
+		echo 오류: bcdedit 기본 부팅 항목 설정 실패.
+		EXIT /B
+	)
+	echo 재부팅을 시작합니다.
+	shutdown /r /t 0
+
+	EXIT /B
 )
 
-echo 재부팅을 시작합니다.
-shutdown /r /t 0
+if %errorlevel% equ 2 (
+	echo 선택된 ID^(%selectedID%^)를 단일 부팅 시퀀스를 설정합니다...
+	echo bcdedit /bootsequence %selectedID% >nul 2>&1
+	if !errorlevel! neq 0 (
+		echo 오류: bcdedit 단일 부팅 시퀀스 설정 실패.
+		EXIT /B
+	)
+	echo 재부팅을 시작합니다.
+	shutdown /r /t 0
 
-goto :eof
+	EXIT /B
+)
+
+EXIT /B
 
 :PrintAligned
 :: %1=index, %2=description, %3=device
