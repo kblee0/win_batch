@@ -12,7 +12,7 @@ if %errorlevel% neq 0 (
 	Exit /B																									
 )
 
-for %%i in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) DO IF "!HLOCAL!" == "" IF EXIST %%i:\home\local SET HLOCAL=%%i:\home\local
+for %%i in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) DO IF "!HOME!" == "" IF EXIST %%i:\home SET HOME=%%i:\home
 
 :main
 cls
@@ -28,7 +28,7 @@ echo  4. 위젯 비활성화 (11)             5. CoPilot 비활성화 (11)
 echo  6. 백그라운드앱 중지              7. Explorer 기본설정
 echo  8. Hostname/Workgroup 변경        9. 예약된 저장소 삭제
 echo 10. Windows App 삭제              11. TEMP 변경
-echo 12. cmd process 설정(autorun.cmd) 13. 기본 임시디렉토리 오픈
+echo 12. Terminal 기본설정             13. 기본 임시디렉토리 오픈
 echo 14. PC시간을 UTC 로설정
 echo.
 echo * 기타
@@ -250,7 +250,28 @@ pause
 goto:eof
 
 :mainmenu_12
-IF EXIST C:\home\proj\win_batch\autorun.cmd Reg.exe add "HKLM\SOFTWARE\Microsoft\Command Processor" /v "AutoRun" /t REG_SZ /d "C:\home\proj\win_batch\autorun.cmd" /f
+:: IF EXIST C:\home\proj\win_batch\autorun.cmd Reg.exe add "HKLM\SOFTWARE\Microsoft\Command Processor" /v "AutoRun" /t REG_SZ /d "C:\home\proj\win_batch\autorun.cmd" /f
+SET JQ=%HOME%\bin\jq.exe
+SET JSON=%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json
+
+(
+echo .copyOnSelect = true ^|
+echo .defaultProfile = (.profiles.list[] ^| select(.name == "\uba85\ub839 \ud504\ub86c\ud504\ud2b8" or .name == "Command Prompt"^) ^| .guid ^) ^|
+echo .profiles.defaults = {"font": {"face": "Monoplex KR"}} ^|
+echo .profiles.list ^|= map(if .guid == "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}" then
+echo     .commandline = "%%SystemRoot%%\\System32\\cmd.exe /k C:\\home\\autorun.cmd" ^| .startingDirectory = "C:\\home"
+echo  else . end^) ^|
+echo .profiles.list = (
+echo    [.profiles.list[] ^| select(.name == "\uba85\ub839 \ud504\ub86c\ud504\ud2b8" or .name == "Command Prompt"^)] +
+echo    [.profiles.list[] ^| select(.name ^^!= "\uba85\ub839 \ud504\ub86c\ud504\ud2b8" and .name ^^!= "Command Prompt"^)]
+echo ^)
+) > %TEMP%\temp.jq
+
+%JQ% -f %TEMP%\temp.jq %JSON% > %TEMP%\temp.json
+copy %TEMP%\temp.json %JSON%
+
+del %TEMP%\temp.jq
+del %TEMP%\temp.json
 
 pause
 goto:eof
@@ -312,7 +333,7 @@ goto:eof
 
 :mainmenu_20
 
-%HLOCAL%\bin\psexec.exe -i -s %HLOCAL%\bin\regjump.exe HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT\Parameters
+%HOME%\local\bin\psexec.exe -i -s %HLOCAL%\bin\regjump.exe HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT\Parameters
 
 goto:eof
 
