@@ -20,8 +20,6 @@ SET DSCR=C:\img\vhdman.scr
 IF NOT "%1" == "" SET VHD=%1
 IF "%1" == "" SET VHD=C:\img\win11_base.vhdx
 
-goto :check_admin
- 
 :main
 cls
 

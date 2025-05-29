@@ -278,6 +278,9 @@ copy %TEMP%\temp.json %JSON%
 del %TEMP%\temp.jq
 del %TEMP%\temp.json
 
+Reg.exe add "HKCU\Console\%%%%Startup" /v "DelegationConsole" /t REG_SZ /d "{2EACA947-7F5F-4CFA-BA87-8F7FBEEFBE69}" /f
+Reg.exe add "HKCU\Console\%%%%Startup" /v "DelegationTerminal" /t REG_SZ /d "{E12CFF52-A866-4C77-9A90-F570A7AA2C6B}" /f
+
 pause
 goto:eof
 
