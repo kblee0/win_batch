@@ -256,6 +256,9 @@ goto:eof
 SET JQ=%HOME%\bin\jq.exe
 SET JSON=%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json
 
+IF NOT EXIST %JQ% goto :eof
+IF NOT EXIST %JSON% goto :eof
+
 (
 echo .copyOnSelect = true ^|
 echo .defaultProfile = (.profiles.list[] ^| select(.name == "\uba85\ub839 \ud504\ub86c\ud504\ud2b8" or .name == "Command Prompt"^) ^| .guid ^) ^|
