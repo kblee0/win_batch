@@ -1,7 +1,7 @@
 @echo off 
 SET PATH=%PATH%;C:\home\bin;C:\home\local\bin;C:\home\proj\win_batch
 
-doskey alias = doskey $*
+doskey alias = IF "$1" == "" (doskey /MACROS) ELSE (doskey $*)
 doskey cat = type $*
 doskey cd = cd /d $*
 doskey clear = cls
