@@ -1,13 +1,26 @@
 @echo off 
-doskey ls=dir $*
-doskey cat=type $*
-doskey cd=cd /d $*
+SET PATH=%PATH%;C:\home\bin;C:\home\local\bin;C:\home\proj\win_batch
+
+doskey alias = doskey $*
+doskey cat = type $*
+doskey cd = cd /d $*
+doskey clear = cls
+doskey cp = copy $*
+doskey history = doskey /history
+doskey kill = taskkill /PID $*
+doskey ll = dir $* /w
+doskey ls = dir $*
+doskey mkpubdir = mkdir $* $T IF %ERRORLEVEL% EQU 0 icacls %DIR% /inheritance:r $T IF %ERRORLEVEL% EQU 0 icacls %DIR% /grant Everyone:(OI)(CI)F
+doskey mv = move $*
+doskey ps = tasklist $*
+doskey pwd = cd
+doskey rm = del $*
+
+doskey rcopy=robocopy $* /E /SJ /SL /MT /COPY:DAT /DCOPY:DAT /R:1 /W:1 /NFL
+doskey rsync=robocopy $* /MIR /E /SJ /SL /MT /COPY:DAT /DCOPY:DAT /R:1 /W:1 /NFL
+
 doskey notepad="C:\home\local\npp\notepad++.exe" $*
-doskey rcopy=robocopy $1 $2 /E /SJ /SL /MT /COPY:DAT /DCOPY:DAT /R:1 /W:1 /NFL $3 $4 $5 $6 $7 $8 $9
-doskey rsync=robocopy $1 $2 /E /SJ /SL /MIR /MT /COPY:DAT /DCOPY:DAT /R:1 /W:1 /NFL $3 $4 $5 $6 $7 $8 $9
-doskey history=doskey /history
+doskey vi="C:\home\local\npp\notepad++.exe" $*
 
 IF NOT EXIST c:\windows\system32\sudo.exe doskey sudo=c:\usr\bin\gsudo.exe $*
 IF EXIST C:\home\android\platform-tools\adb.exe doskey adb=C:\home\android\platform-tools\adb.exe $*
-
-SET PATH=%PATH%;C:\home\bin;C:\home\local\bin;C:\home\proj\win_batch

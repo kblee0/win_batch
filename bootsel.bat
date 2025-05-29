@@ -41,7 +41,6 @@ for /f "tokens=1,* delims= " %%A in ('bcdedit') do (
         if /i not "!identifier!"=="{bootmgr}" (
             call :PrintAligned !index! "!description!" "!device!"
 			set "id[!index!]=!identifier!"
-			set "indexchoice=!indexchoice!!index!"
             set /a index+=1
         )
         set "identifier="
@@ -50,10 +49,9 @@ for /f "tokens=1,* delims= " %%A in ('bcdedit') do (
     )
 )
 
+set choice=
 echo.
-choice /n /c !indexchoice!0 /M "기본 부팅 항목 (0: 취소): "
-
-set choice=%errorlevel%
+set /p choice="기본 부팅 항목 (0: 취소): "
 
 if not defined id[%choice%] (
     goto :eof
@@ -61,11 +59,12 @@ if not defined id[%choice%] (
 
 set "selectedID=!id[%choice%]!"
 
+set choice=
 echo.
-choice /n /c 120 /M "1. 기본설정후 재시작, 2. 임시부팅, 0, 취소 ? "
+set /p choice="1. 기본설정 후 재시작, 2. 임시설정 후 재시작, 0, 취소 : "
 echo.
 
-if %errorlevel% equ 1 (
+if %choice% equ 1 (
 	echo 선택된 ID^(%selectedID%^)를 기본 부팅 항목으로 설정합니다...
 	bcdedit /default %selectedID% >nul 2>&1
 	if !errorlevel! neq 0 (
@@ -78,9 +77,9 @@ if %errorlevel% equ 1 (
 	EXIT /B
 )
 
-if %errorlevel% equ 2 (
+if %choice% equ 2 (
 	echo 선택된 ID^(%selectedID%^)를 단일 부팅 시퀀스를 설정합니다...
-	echo bcdedit /bootsequence %selectedID% >nul 2>&1
+	bcdedit /bootsequence %selectedID% >nul 2>&1
 	if !errorlevel! neq 0 (
 		echo 오류: bcdedit 단일 부팅 시퀀스 설정 실패.
 		EXIT /B
