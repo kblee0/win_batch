@@ -10,7 +10,8 @@ doskey history = doskey /history
 doskey kill = taskkill /PID $*
 doskey ll = dir $* /w
 doskey ls = dir $*
-doskey mkpubdir = mkdir $* $T IF %ERRORLEVEL% EQU 0 icacls $* /inheritance:r ^>nul 2^>^&1 $T IF %ERRORLEVEL% EQU 0 icacls $* /grant Everyone:(OI)(CI)F ^>nul 2^>^&1
+doskey mkpubdir = mkdir $* $T IF %%ERRORLEVEL%% EQU 0 icacls $* /inheritance:r ^>nul 2^>^&1 ^& icacls $* /grant Everyone:(OI)(CI)F ^>nul 2^>^&1
+
 doskey mv = move $*
 doskey ps = tasklist $*
 doskey pwd = cd
