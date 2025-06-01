@@ -1,4 +1,6 @@
 @echo off 
+if "%1" == "-i" Reg.exe add "HKCU\SOFTWARE\Microsoft\Command Processor" /v "AutoRun" /t REG_SZ /d %~dpnx0 /f
+
 SET PATH=%PATH%;C:\home\bin;C:\home\local\bin;C:\home\proj\win_batch
 
 doskey alias = IF "$1" == "" (doskey /MACROS) ELSE (doskey $*)

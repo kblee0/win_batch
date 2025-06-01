@@ -252,7 +252,7 @@ pause
 goto:eof
 
 :mainmenu_12
-:: IF EXIST C:\home\proj\win_batch\autorun.cmd Reg.exe add "HKLM\SOFTWARE\Microsoft\Command Processor" /v "AutoRun" /t REG_SZ /d "C:\home\proj\win_batch\autorun.cmd" /f
+:: IF EXIST C:\home\proj\win_batch\autorun.cmd Reg.exe add "HKCU\SOFTWARE\Microsoft\Command Processor" /v "AutoRun" /t REG_SZ /d "C:\home\proj\win_batch\autorun.cmd" /f
 SET JQ=%HOME%\bin\jq.exe
 SET JSON=%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json
 
@@ -264,7 +264,8 @@ echo .copyOnSelect = true ^|
 echo .defaultProfile = (.profiles.list[] ^| select(.name == "\uba85\ub839 \ud504\ub86c\ud504\ud2b8" or .name == "Command Prompt"^) ^| .guid ^) ^|
 echo .profiles.defaults = {"font": {"face": "Monoplex KR"}} ^|
 echo .profiles.list ^|= map(if .guid == "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}" then
-echo     .commandline = "%%SystemRoot%%\\System32\\cmd.exe /k C:\\home\\autorun.cmd" ^| .startingDirectory = "C:\\home"
+::echo     .commandline = "%%SystemRoot%%\\System32\\cmd.exe /k C:\\home\\autorun.cmd" ^| .startingDirectory = "C:\\home"
+echo     .startingDirectory = "C:\\home"
 echo  else . end^) ^|
 echo .profiles.list = (
 echo    [.profiles.list[] ^| select(.name == "\uba85\ub839 \ud504\ub86c\ud504\ud2b8" or .name == "Command Prompt"^)] +
