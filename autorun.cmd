@@ -5,7 +5,7 @@ SET PATH=%PATH%;C:\home\bin;C:\home\local\bin;C:\home\proj\win_batch
 
 doskey alias = IF "$1" == "" (doskey /MACROS) ELSE (doskey $*)
 doskey cat = type $*
-doskey cd = cd /d $*
+doskey cd = IF "$1" == "" (cd /d c:\home) ELSE (cd /d $*)
 doskey clear = cls
 doskey cp = copy $*
 doskey history = doskey /history
@@ -24,6 +24,7 @@ doskey rsync=robocopy $* /MIR /E /SJ /SL /MT /COPY:DAT /DCOPY:DAT /R:1 /W:1 /NFL
 
 doskey notepad="C:\home\local\npp\notepad++.exe" $*
 doskey vi="C:\home\local\npp\notepad++.exe" $*
+doskey nvm = IF "$1" == "use" (nvmuse $2 $3 $4) ELSE (nvm $*)
 
 IF NOT EXIST c:\windows\system32\sudo.exe doskey sudo=c:\usr\bin\gsudo.exe $*
 IF EXIST C:\home\android\platform-tools\adb.exe doskey adb=C:\home\android\platform-tools\adb.exe $*
