@@ -52,7 +52,7 @@ rem Python
 rem -------------------------------------------
 
 setx /M PYTHON_HOME C:\home\dev\Python
-setx /M VIRTUAL_ENV C:\home\dev\pyvenv
+setx /M VIRTUAL_ENV C:\home\dev\.data\.venv
 set SYS_PATH=%SYS_PATH%;%%PYTHON_HOME%%\Scripts;%%PYTHON_HOME%%;%%VIRTUAL_ENV%%\Scripts
 
 rem -------------------------------------------
@@ -78,11 +78,11 @@ echo -------------------------------------------
 echo type below command unber user command env
 echo -------------------------------------------
 
-echo pyhton -m venv C:\home\dev\pyvenv
-echo git config --global user.name "kblee0"
-echo git config --global user.email kblee0@gmail.com
-echo git config credential.helper store
-echo npm config -g set prefix C:\home\dev\nvm\nodejs\.npm\global
-echo npm config -g set cache C:\home\dev\nvm\nodejs\.npm\cache
+git config --global user.name "kblee0"
+git config --global user.email kblee0@gmail.com
+git config credential.helper store
+npm config -g set prefix C:\home\dev\nvm\nodejs\.npm\global
+npm config -g set cache C:\home\dev\nvm\nodejs\.npm\cache
+echo pyhton -m venv C:\home\dev\.data\.venv
 
 pause
