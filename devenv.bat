@@ -1,4 +1,14 @@
 @echo off
+:check_admin
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+	if exist %SystemRoot%\system32\sudo.exe (
+		sudo --inline %~f0
+	) else (
+		Echo You must have administrator rights to continue ...
+	)
+	Exit /B																									
+)
 
 :: %SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;%SYSTEMROOT%\System32\OpenSSH\
 
