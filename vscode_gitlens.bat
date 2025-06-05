@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set SED=c:\home\bin\sed.exe
+set SED=C:\home\dev\git\usr\bin\sed.exe
 
 :: 변경할 디렉토리의 상위 경로 (현재 배치 파일이 실행되는 위치를 기준으로 함)
 set "baseDir=C:\home\dev\vscode\data\extensions"
