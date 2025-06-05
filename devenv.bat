@@ -77,6 +77,18 @@ set SYS_PATH=%SYS_PATH%;C:\home\dev\git\bin
 set SYS_PATH=%SYS_PATH%;C:\home\dev\svn\bin
 
 
+:: -------------------------------------------
+:: miniconda
+:: -------------------------------------------
+:: Invoke-WebRequest -Uri "https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe"  -OutFile "$env:TEMP\Miniconda3-latest-Windows-x86_64.exe"
+:: "$env:TEMP\Miniconda3-latest-Windows-x86_64.exe" /InstallationType=JustMe /AddToPath=0 /S /RegisterPython=0 /NoRegistry=1 /NoScripts=1 /NoShortcuts=1 /D=C:\home\dev\miniconda
+
+set SYS_PATH=%SYS_PATH%;C:\home\dev\miniconda\condabin;C:\home\dev\miniconda\Scripts
+set PATH=%PATH%;C:\home\dev\miniconda\condabin;C:\home\dev\miniconda\Scripts
+
+:: conda config --system --append envs_dirs c:\home\dev\.data\miniconda
+:: conda create -n venv python=3.13.3
+
 :: --------- Global Path --------
 setx /M PATH "%SYS_PATH%"
 
@@ -93,6 +105,7 @@ git config --global user.email kblee0@gmail.com
 git config credential.helper store
 npm config -g set prefix C:\home\dev\nvm\nodejs\.npm\global
 npm config -g set cache C:\home\dev\nvm\nodejs\.npm\cache
-echo pyhton -m venv C:\home\dev\.data\.venv
+echo python -m venv C:\home\dev\.data\.venv
+echo conda config --system --append envs_dirs c:\home\dev\.data\miniconda
 
 pause
