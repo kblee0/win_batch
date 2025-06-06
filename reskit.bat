@@ -342,7 +342,7 @@ goto:eof
 
 :mainmenu_20
 
-%HOME%\local\bin\psexec.exe -i -s %HLOCAL%\bin\regjump.exe HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT\Parameters
+%HOME%\local\bin\psexec.exe -i -s %HOME%\local\bin\regjump.exe HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT\Parameters\Keys
 
 goto:eof
 
