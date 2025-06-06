@@ -1,8 +1,4 @@
 # 블루투스 마우스 듀얼OS 사용법..
-How to pair a Low Energy (LE) Bluetooth device in dual boot with Windows & Linux
---------------------------------------------------------------------------------
-
-##### Thursday, September 18, 2014
 
 듀얼 부팅을 사용하는 분들은 다른 OS로 부팅할 때마다 키보드나 마우스를 다시 페어링해야 하는 번거로움을 잘 알고 계실 겁니다. 이 튜토리얼에서는 Windows 8과 Debian에서 LE 블루투스 마우스를 동시에 페어링하는 방법을 보여드리겠습니다.
 
