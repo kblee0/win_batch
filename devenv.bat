@@ -1,5 +1,4 @@
 @echo off
-setlocal enabledelayedexpansion
 
 :check_admin
 net session >nul 2>&1
@@ -88,7 +87,7 @@ setx /M PATH "%SYS_PATH%"
 :: -------------------------------------------
 :: Secure environment variables
 :: -------------------------------------------
-pushd "%~dp0secure"
+IF EXIST "%~dp0secureenv.bat" CALL "%~dp0secureenv.bat"
 
 for %%F in (*) do (
     set "VAR_NAME=%%F"
