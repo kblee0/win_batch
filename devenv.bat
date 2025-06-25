@@ -1,4 +1,6 @@
 @echo off
+setlocal enabledelayedexpansion
+
 :check_admin
 net session >nul 2>&1
 if %errorlevel% neq 0 (
@@ -58,17 +60,8 @@ setx /M NVM_HOME c:\home\dev\nvm
 set SYS_PATH=%SYS_PATH%;%%NVM_HOME%%;%%NVM_HOME%%\nodejs\.npm\global;%%NVM_HOME%%\nodejs
 
 :: -------------------------------------------
-:: Python
-:: -------------------------------------------
-
-setx /M PYTHON_HOME C:\home\dev\Python
-setx /M VIRTUAL_ENV C:\home\dev\.data\.venv
-set SYS_PATH=%SYS_PATH%;%%PYTHON_HOME%%\Scripts;%%PYTHON_HOME%%;%%VIRTUAL_ENV%%\Scripts
-
-:: -------------------------------------------
 :: Git
 :: -------------------------------------------
-setx /M GITHUB_TOKEN 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
 set SYS_PATH=%SYS_PATH%;C:\home\dev\git\bin
 
 :: -------------------------------------------
@@ -92,6 +85,27 @@ set PATH=%PATH%;C:\home\dev\miniconda\condabin;C:\home\dev\miniconda\Scripts
 :: --------- Global Path --------
 setx /M PATH "%SYS_PATH%"
 
+:: -------------------------------------------
+:: Secure environment variables
+:: -------------------------------------------
+pushd "%~dp0secure"
+
+for %%F in (*) do (
+    set "VAR_NAME=%%F"
+    set "VAR_VALUE="
+
+    set "LINE_READ="
+    for /f "usebackq delims=" %%A in ("%%F") do (
+        if not defined LINE_READ (
+            set "VAR_VALUE=%%A"
+            set "LINE_READ=1"
+        )
+    )
+
+    setx "!VAR_NAME!" "!VAR_VALUE!"
+    echo set "!VAR_NAME!=!VAR_VALUE!"
+)
+popd
 
 :: -------------------------------------------
 :: User setting
@@ -105,7 +119,7 @@ git config --global user.email kblee0@gmail.com
 git config credential.helper store
 npm config -g set prefix C:\home\dev\nvm\nodejs\.npm\global
 npm config -g set cache C:\home\dev\nvm\nodejs\.npm\cache
-echo python -m venv C:\home\dev\.data\.venv
+echo python -m venv C:\home\dev\.data\venv313
 echo conda config --system --append envs_dirs c:\home\dev\.data\miniconda
 
 pause
