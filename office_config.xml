@@ -1,0 +1,26 @@
+<Configuration>
+  <Add OfficeClientEdition="64" Channel="PerpetualVL2024" >
+    <Product ID="ProPlus2024Volume" PIDKEY="XJ2XN-FW8RK-P4HMP-DKDBV-GCVGB">
+      <Language ID="ko-kr" />
+      <ExcludeApp ID="Access" />
+      <!--ExcludeApp ID="Excel" /-->
+      <ExcludeApp ID="Lync" />
+      <ExcludeApp ID="OneDrive" />
+      <!--ExcludeApp ID="OneNote" /-->
+      <ExcludeApp ID="Outlook" />
+      <!--ExcludeApp ID="PowerPoint" /-->
+      <!--ExcludeApp ID="Word" /-->
+    </Product>
+    <Product ID="ProofingTools">
+      <Language ID="ko-kr" />
+    </Product>
+  </Add>
+  <RemoveMSI All="True" />
+  <AppSettings>
+    <User Key="software\microsoft\office\16.0\excel\options" Name="developertools" Value="1" Type="REG_DWORD" App="excel16" Id="L_DisplayDeveloperTab" />
+    <User Key="software\microsoft\office\16.0\excel\options" Name="font" Value="맑은 고딕,9" Type="REG_SZ" App="excel16" Id="L_Font" />
+    <User Key="software\microsoft\office\16.0\excel\options" Name="autohyperlink" Value="0" App="excel16" Id="L_Internetandnetworkpathsashyperlinks" ParentID="L_Internetandnetworkpathsashyperlinks" Type="REG_DWORD" />
+    <User Key="Software\Microsoft\Office\16.0\OneNote\Options\Other" Name="RunSystemTrayApp" Value="0" Type="REG_DWORD" App="onenote16" />
+    <User Key="Software\Microsoft\Office\16.0\OneNote\Options\Other" Name="SystemTrayAppDefaultBehavior" Value="2" Type="REG_DWORD" App="onenote16" />
+  </AppSettings>
+</Configuration>
