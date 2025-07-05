@@ -355,7 +355,20 @@ IF "%IN_HST%" == "" goto:eof
 SET HST=%IN_HST%
 IF /i "%IN_HST%" == "INET" SET HST=%INET_HST%
 
-cscript %SystemRoot%\System32\slmgr.vbs /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX
+ECHO 1) Windows Pro 10
+ECHO 2) Windows 10/11 LTSC
+SET /P "IN_CHOICE="Select Edition: "
+
+IF "%IN_CHOICE%" == "1" SET PRODUCT_KEY=W269N-WFGWX-YVC9B-4J6C9-T83GX
+IF "%IN_CHOICE%" == "2" SET PRODUCT_KEY=M7XTQ-FN8P6-TTKYV-9D4CC-J462D
+
+IF NOT DEFINED PRODUCT_KEY (
+	ECHO Invalid choice. Exiting...
+	pause
+	goto:eof
+)
+
+cscript %SystemRoot%\System32\slmgr.vbs /ipk %PRODUCT_KEY%
 cscript %SystemRoot%\System32\slmgr.vbs /skms %HST%
 cscript %SystemRoot%\System32\slmgr.vbs /ato
 
