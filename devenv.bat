@@ -111,11 +111,11 @@ echo -------------------------------------------
 echo type below command unber user command env
 echo -------------------------------------------
 
-git config --global user.name "kblee0"
-git config --global user.email kblee0@gmail.com
-git config credential.helper store
-npm config -g set prefix C:\home\dev\nvm\nodejs\.npm\global
-npm config -g set cache C:\home\dev\nvm\nodejs\.npm\cache
+echo git config --global user.name "kblee0"
+echo git config --global user.email kblee0@gmail.com
+echo git config --global credential.helper manager
+echo npm config -g set prefix C:\home\dev\nvm\nodejs\.npm\global
+echo npm config -g set cache C:\home\dev\nvm\nodejs\.npm\cache
 echo python -m venv C:\home\dev\.data\venv313
 echo conda config --system --append envs_dirs c:\home\dev\.data\miniconda
 
