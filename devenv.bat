@@ -114,6 +114,7 @@ echo -------------------------------------------
 echo git config --global user.name "kblee0"
 echo git config --global user.email kblee0@gmail.com
 echo git config --global credential.helper manager
+echo git config --global --add safe.directory c:\home\proj
 echo npm config -g set prefix C:\home\dev\nvm\nodejs\.npm\global
 echo npm config -g set cache C:\home\dev\nvm\nodejs\.npm\cache
 echo python -m venv C:\home\dev\.data\venv313
