@@ -6,8 +6,10 @@ SET PATH=%PATH%;C:\home\bin;C:\home\local\bin;C:\home\proj\win_batch
 doskey alias = IF "$1" == "" (doskey /MACROS) ELSE (doskey $*)
 doskey cat = type $*
 doskey cd = IF "$1" == "" (cd /d c:\home) ELSE (cd /d $*)
+doskey cdhome = cd %USERPROFILE%
 doskey clear = cls
 doskey cp = copy $*
+doskey env = set $*
 doskey history = doskey /history
 doskey kill = taskkill /PID $*
 doskey ll = dir $* /w
