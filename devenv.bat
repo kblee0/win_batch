@@ -70,6 +70,7 @@ call :sys_path_append %%%%GRADLE_HOME%%%%\bin
 
 setx /M NVM_HOME c:\home\dev\nvm
 call :sys_path_append %%%%NVM_HOME%%%%
+call :sys_path_append node_modules\.bin
 call :sys_path_append %%%%NVM_HOME%%%%\nodejs\.npm\global
 call :sys_path_append %%%%NVM_HOME%%%%\nodejs
 
