@@ -128,13 +128,19 @@ Reg.exe add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /
 Reg.exe add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d "1" /f
 
 :: OneDrive KFM
+reg add "HKLM\SOFTWARE\Policies\Microsoft\OneDrive" /v KFMBlockOptIn /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\OneDrive" /v KFMBlockOptInWithWizard /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\OneDrive" /v KFMBlockSilentOptIn /t REG_DWORD /d 1 /f
+
 :: SubscribedContent-310093Enabled	Windows Welcome Experience (기본 환영화면)
 :: SubscribedContent-338387Enabled	Microsoft Edge 추천 알림
 :: SubscribedContent-338388Enabled	Microsoft 계정 연결 권장 알림
 :: SubscribedContent-338389Enabled	OneDrive / Microsoft 365 추천 알림
 :: SubscribedContent-353694Enabled	Windows 기능 및 업데이트 관련 알림
-Reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\OneDrive" /v "KFMBlockOptIn" /t REG_DWORD /d "1" /f
-Reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SubscribedContent-338389Enabled /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SubscribedContent-310093Enabled /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SubscribedContent-338387Enabled /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SubscribedContent-353694Enabled /t REG_DWORD /d 0 /f
+
 
 :: zip/cap folder disable
 Reg.exe delete "HKCR\CABFolder\CLSID" /f
