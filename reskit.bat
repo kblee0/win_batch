@@ -1,18 +1,18 @@
 @echo off
 setlocal enabledelayedexpansion
 
+for %%i in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) DO IF "!HOME!" == "" IF EXIST %%i:\home SET HOME=%%i:\home
+
 :check_admin
 net session >nul 2>&1
 if %errorlevel% neq 0 (
-	if exist %SystemRoot%\system32\sudo.exe (
-		sudo --inline %~f0
+	if exist %HOME%\bin\gsudo.exe (
+		%HOME%\bin\gsudo.exe %~f0
 	) else (
 		Echo You must have administrator rights to continue ...
 	)
 	Exit /B																									
 )
-
-for %%i in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) DO IF "!HOME!" == "" IF EXIST %%i:\home SET HOME=%%i:\home
 
 :main
 cls
@@ -356,7 +356,7 @@ goto:eof
 
 :mainmenu_20
 
-%HOME%\bin\AdvancedRun.exe /Run /Clear / /RunAs 8 /EXEFilename %HOME%\local\bin\regjump.exe /CommandLine HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT\Parameters\Keys
+%HOME%\bin\gsudo.exe --ti %HOME%\local\bin\regjump.exe HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT\Parameters\Keys
 
 goto:eof
 
