@@ -356,7 +356,7 @@ goto:eof
 
 :mainmenu_20
 
-%HOME%\local\PowerRun\PowerRun_x64.exe %HOME%\local\bin\regjump.exe HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT\Parameters\Keys
+%HOME%\bin\AdvancedRun.exe /Run /Clear / /RunAs 8 /EXEFilename %HOME%\local\bin\regjump.exe /CommandLine HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT\Parameters\Keys
 
 goto:eof
 
