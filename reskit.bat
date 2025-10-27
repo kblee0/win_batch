@@ -356,7 +356,7 @@ goto:eof
 
 :mainmenu_20
 
-%HOME%\local\bin\psexec.exe -i -s %HOME%\local\bin\regjump.exe HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT\Parameters\Keys
+%HOME%\local\PowerRun\PowerRun_x64.exe %HOME%\local\bin\regjump.exe HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT\Parameters\Keys
 
 goto:eof
 
