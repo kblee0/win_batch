@@ -80,6 +80,17 @@ call :sys_path_append %%%%NVM_HOME%%%%\nodejs
 call :sys_path_append C:\home\dev\git\bin
 
 :: -------------------------------------------
+:: Python
+:: -------------------------------------------
+:: git clone https://github.com/pyenv-win/pyenv-win.git c:\home\dev\pyenv
+setx /M PYENV C:\home\dev\pyenv\pyenv-win
+setx /M PYENV_ROOT C:\home\dev\pyenv\pyenv-win
+:: set PATH=%PYENV%\bin;%PYENV%\shims;%PATH%
+call :sys_path_append %%%%PYENV%%%%\bin
+call :sys_path_append %%%%PYENV%%%%\shims
+
+
+:: -------------------------------------------
 :: SVN
 :: -------------------------------------------
 call :sys_path_append C:\home\dev\svn\bin
