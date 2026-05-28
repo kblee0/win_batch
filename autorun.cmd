@@ -14,7 +14,7 @@ doskey history = doskey /history
 doskey kill = taskkill /PID $*
 doskey ll = dir $* /w
 doskey ls = dir $*
-doskey setpub=gsudo powershell -NoProfile -Command "$p='$1'; $acl=Get-Acl $p; $acl.Access | Where-Object { $_.IdentityReference -notlike '*Everyone*' } | ForEach-Object { $acl.RemoveAccessRule($_) } | Out-Null; $rule=New-Object System.Security.AccessControl.FileSystemAccessRule 'Everyone','FullControl',3,0,0; $acl.ResetAccessRule($rule); Set-Acl $p $acl; icacls $p /setowner Everyone"
+doskey setpub=gsudo powershell -NoProfile -Command "(Get-Acl '$1') | ForEach-Object { $_.SetAccessRuleProtection([convert]::ToBoolean(1),[convert]::ToBoolean(0)); $_.ResetAccessRule((New-Object Security.AccessControl.FileSystemAccessRule 'Everyone','FullControl',3,0,0)); Set-Acl '$1' $_ }; takeown /f '$1' /a > $null; icacls '$1' /setowner Everyone /c"
 
 doskey mv = move $*
 doskey ps = tasklist $*
