@@ -14,7 +14,7 @@ doskey history = doskey /history
 doskey kill = taskkill /PID $*
 doskey ll = dir $* /w
 doskey ls = dir $*
-doskey mkpubdir = mkdir $* $T IF %%ERRORLEVEL%% EQU 0 icacls $* /inheritance:r ^>nul 2^>^&1 ^& icacls $* /grant Everyone:(OI)(CI)F ^>nul 2^>^&1
+doskey setpub=gsudo powershell -NoProfile -Command "$p='$1'; $acl=Get-Acl $p; $acl.Access | Where-Object { $_.IdentityReference -notlike '*Everyone*' } | ForEach-Object { $acl.RemoveAccessRule($_) } | Out-Null; $rule=New-Object System.Security.AccessControl.FileSystemAccessRule 'Everyone','FullControl',3,0,0; $acl.ResetAccessRule($rule); Set-Acl $p $acl; icacls $p /setowner Everyone"
 
 doskey mv = move $*
 doskey ps = tasklist $*

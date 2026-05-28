@@ -2,20 +2,20 @@
 setlocal
 setlocal enabledelayedexpansion
 
+for %%i in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) DO IF "!HOME!" == "" IF EXIST %%i:\home SET HOME=%%i:\home
+
 :check_admin
 net session >nul 2>&1
 if %errorlevel% neq 0 (
-	if exist %SystemRoot%\system32\sudo.exe (
-		sudo --inline %~f0
+	if exist %HOME%\bin\gsudo.exe (
+		%HOME%\bin\gsudo.exe %~f0
 	) else (
 		Echo You must have administrator rights to continue ...
 	)
 	Exit /B																									
 )
 
-for %%i in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) DO IF "!HLOCAL!" == "" IF EXIST %%i:\home\local SET HLOCAL=%%i:\home\local
-
-SET DSCR=C:\img\vhdman.scr
+SET DSCR=%TEMP%\vhdman.scr
 
 IF NOT "%1" == "" SET VHD=%1
 IF "%1" == "" SET VHD=C:\img\win11_base.vhdx
@@ -67,10 +67,11 @@ IF EXIST %VHD% IF /I NOT "%YN%" == "Y" goto:eof
 echo create vdisk file="%VHD%" type=expandable maximum=%SZMB%
 echo select vdisk file="%VHD%"
 echo attach vdisk
+echo convert gpt
 echo create partition primary
 echo format fs=ntfs quick
+echo assign
 echo detach vdisk
-
 ) > %DSCR%
 diskpart /s %DSCR%
 del %DSCR%
@@ -100,7 +101,7 @@ echo assign letter=V
 diskpart /s %DSCR%
 del %DSCR%
 
-%HLOCAL%\bin\sdelete64.exe /z V:
+%HOME%\local\bin\sdelete64.exe /z V:
 
 (
 echo select vdisk file="%VHD%"
