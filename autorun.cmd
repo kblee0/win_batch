@@ -14,7 +14,7 @@ doskey history = doskey /history
 doskey kill = taskkill /PID $*
 doskey ll = dir $* /w
 doskey ls = dir $*
-doskey setpub=gsudo powershell -NoProfile -Command "(Get-Acl '$1') | ForEach-Object { $_.SetAccessRuleProtection([convert]::ToBoolean(1),[convert]::ToBoolean(0)); $_.ResetAccessRule((New-Object Security.AccessControl.FileSystemAccessRule 'Everyone','FullControl',3,0,0)); Set-Acl '$1' $_ }; takeown /f '$1' /a > $null; icacls '$1' /setowner Everyone /c"
+doskey setpub=gsudo powershell -NoProfile -ExecutionPolicy Bypass -File C:\home\proj\win_batch\Set-FolderEveryone.ps1 $*
 
 doskey mv = move $*
 doskey ps = tasklist $*
