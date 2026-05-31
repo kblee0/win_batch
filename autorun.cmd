@@ -14,6 +14,7 @@ doskey history = doskey /history
 doskey kill = taskkill /PID $*
 doskey ll = dir $* /w
 doskey ls = dir $*
+doskey pshell=powershell -NoProfile -ExecutionPolicy Bypass -File $*
 doskey setpub=gsudo powershell -NoProfile -ExecutionPolicy Bypass -File C:\home\proj\win_batch\Set-FolderEveryone.ps1 $*
 
 doskey mv = move $*
