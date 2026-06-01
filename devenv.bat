@@ -18,15 +18,16 @@ goto :eof
 :main
 
 :: Check if running as administrator
-net session >nul 2>&1
-if %errorlevel% neq 0 (
+Reg.exe query "HKU\S-1-5-19\Environment"
+If Not %ERRORLEVEL% EQU 0 (
 	if exist %SystemRoot%\system32\sudo.exe (
 		sudo --inline %~f0
 	) else (
 		Echo You must have administrator rights to continue ...
 	)
-	Exit /B																									
+	Exit /B
 )
+Cls
 
 :: Get system path
 for /f "skip=2 tokens=2,*" %%A in ('reg query "HKLM\System\CurrentControlSet\Control\Session Manager\Environment" /v Path 2^>nul') do SET SYS_PATH=%%B
