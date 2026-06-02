@@ -1,8 +1,8 @@
 <#
 .SYNOPSIS
-    Hyper-V 모듈 없이 Windows 순수 기능만으로 VHD 파일의 용량을 확장하거나 축소합니다.
+    Hyper-V PowerShell 모듈을 사용하여 VHD 파일의 용량을 확장하거나 축소합니다.
 .DESCRIPTION
-    WMI/CIM 스토리지 API를 사용하여 VHD의 가상 크기를 감지하며, 
+    Hyper-V 모듈의 Resize-VHD, Get-VHD 등을 사용하여 VHD의 가상 크기를 감지 및 조정합니다.
     용량 축소 시 -o 옵션을 주면 파티션 내부 조각 모음(Defrag)을 먼저 수행하여 축소 성공률을 극대화합니다.
 .PARAMETER ImagePath
     VHD 파일의 전체 경로입니다.
@@ -24,6 +24,37 @@ param (
     [Alias("o")]
     [Switch]$Optimize
 )
+
+# ---------------------------------------------------------
+# Hyper-V PowerShell 모듈 로드
+# ---------------------------------------------------------
+try {
+    Import-Module Hyper-V -ErrorAction Stop
+} catch {
+    Write-Error "Hyper-V PowerShell 모듈을 로드할 수 없습니다. Hyper-V 기능이 설치되어 있는지 확인하세요."
+    Exit
+}
+
+function Ensure-VhdUnmounted {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    try {
+        $currentVhd = Get-VHD -Path $Path -ErrorAction Stop
+        if ($currentVhd.Attached) {
+            Write-Host "이미 마운트된 VHD를 언마운트합니다: $Path" -ForegroundColor Yellow
+            Dismount-VHD -Path $Path -ErrorAction Stop
+            Start-Sleep -Seconds 1
+        }
+    } catch {
+        if ($_ -and $_.Exception -and $_.Exception.Message -match 'Cannot find virtual hard disk') {
+            return
+        }
+        throw
+    }
+}
 
 # ----------------------------------------------------
 # [1] 파라미터 유효성 검사 및 사용법 출력
@@ -53,30 +84,30 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
     Exit
 }
 
-# ----------------------------------------------------
+# ---------------------------------------------------------
 # [2] VHD 가상 크기 자동 감지 및 안전장치
-# ----------------------------------------------------
+# ---------------------------------------------------------
 Write-Host "VHD 파일 분석 중..." -ForegroundColor Cyan
 
-# 이스케이프 처리를 포함한 파일의 완전한 절대 경로 확보
+# 절대경로 확보
 $absolutePath = (Get-Item $ImagePath).FullName
-$escapedPath = $absolutePath -replace '\\', '\\\\'
-$currentSizeMB = 0
 
-# 스토리지 API(CIM)를 통해 가상 가상 크기(Maximum Size) 조회
+Ensure-VhdUnmounted -Path $absolutePath
+
+# Hyper-V 모듈으로 VHD 정보 조회
 try {
-    $vhdInfo = Get-CimInstance -Namespace Root/Microsoft/Windows/Storage -ClassName MSFT_VirtualDisk -Filter "ImagePath='$escapedPath'" -ErrorAction Stop
-    if ($vhdInfo) { $currentSizeMB = [int]($vhdInfo.Size / 1MB) }
+    $vhdInfo = Get-VHD -Path $absolutePath -ErrorAction Stop
+    $currentSizeMB = [int]($vhdInfo.Size / 1MB)
 } catch {
-    # 예외 발생 시 하단 체크 로직에서 스크립트가 차단됩니다.
+    Write-Error "오류: Hyper-V Get-VHD를 통한 VHD 크기 조회가 실패했습니다."
+    Write-Host "데이터 안전을 위해 종료합니다." -ForegroundColor LightMagenta
+    Exit
 }
 
 # 크기 조회 실패 시 강제 진행을 차단하고 안전 종료 (데이터 유실 방지)
 if ($currentSizeMB -eq 0) {
-    Write-Host "------------------------------------------------" -ForegroundColor Red
-    Write-Error "오류: CIM 스토리지 API를 통한 VHD 가상 크기 조회가 실패했습니다."
-    Write-Host "데이터 안전을 위해 파일 크기 기반의 수동 연산을 차단하고 종료합니다." -ForegroundColor LightMagenta
-    Write-Host "------------------------------------------------" -ForegroundColor Red
+    Write-Error "오류: VHD 크기 조회가 실패했습니다."
+    Write-Host "데이터 안전을 위해 종료합니다." -ForegroundColor LightMagenta
     Exit
 }
 
@@ -93,85 +124,143 @@ if ($targetSizeMB -eq $currentSizeMB) {
     Exit
 }
 
-# ----------------------------------------------------
+# ---------------------------------------------------------
 # [3] 시나리오 판별 및 실행 공정
-# ----------------------------------------------------
-$diskpartScriptPath = [System.IO.Path]::GetTempFileName()
+# ---------------------------------------------------------
 
 if ($targetSizeMB -gt $currentSizeMB) {
-    # ----------------------------------------------------
+    # ---------------------------------------------------------
     # 시나리오 A: 용량 확장 (Expand)
-    # ----------------------------------------------------
+    # ---------------------------------------------------------
     Write-Host "작업 유형   : 용량 확장 (Expand)" -ForegroundColor Green
     if ($Optimize) { Write-Host "참고        : 확장 작업 시에는 -o (최적화) 옵션이 무시됩니다." -ForegroundColor DarkGray }
     Write-Host "------------------------------------------------"
     
-    $scriptContent = @"
-select vdisk file="$absolutePath"
-attach vdisk
-expand vdisk maximum=$targetSizeMB
-select partition 1
-extend
-detach vdisk
-exit
-"@
-    Set-Content -Path $diskpartScriptPath -Value $scriptContent -Encoding OEM
-    Write-Host "용량 확장 작업을 진행 중입니다..." -ForegroundColor Cyan
-    $null = diskpart /s $diskpartScriptPath
+    try {
+        Write-Host "VHD 파일 크기 확장 중..." -ForegroundColor Cyan
+        $targetSizeBytes = $SizeGB * 1GB
+        Resize-VHD -Path $absolutePath -SizeBytes $targetSizeBytes -ErrorAction Stop
+        
+        Write-Host "VHD 마운트 중..." -ForegroundColor Cyan
+        $mountedVhd = Mount-VHD -Path $absolutePath -PassThru
+        Start-Sleep -Seconds 2
+        
+        # 파티션 확장
+        Write-Host "파티션 확장 중..." -ForegroundColor Cyan
+        $disk = $mountedVhd | Get-Disk
+        $partition = $disk | Get-Partition | Where-Object { $_.Type -eq "Basic" } | Select-Object -First 1
+        
+        if ($partition) {
+            # 사용 가능한 공간을 모두 파티션에 할당
+            $maxSize = ($partition | Get-PartitionSupportedSize).SizeMax
+            Resize-Partition -InputObject $partition -Size $maxSize -ErrorAction Stop
+            Write-Host "   -> 파티션이 $([math]::Round($maxSize / 1GB, 2)) GB로 확장되었습니다." -ForegroundColor Green
+        }
+        
+        Write-Host "VHD 언마운트 중..." -ForegroundColor Cyan
+        Dismount-VHD -Path $absolutePath
+        
+        Write-Host "용량 확장 작업이 완료되었습니다." -ForegroundColor Green
+    } catch {
+        Write-Error "용량 확장 중 오류가 발생했습니다: $_"
+        Exit 1
+    }
 
 } else {
-    # ----------------------------------------------------
+    # ---------------------------------------------------------
     # 시나리오 B: 용량 축소 (Shrink & Compact)
-    # ----------------------------------------------------
+    # ---------------------------------------------------------
     Write-Host "작업 유형   : 용량 축소 (Shrink & Compact)" -ForegroundColor Yellow
     Write-Host "------------------------------------------------"
     
-    # -o 스위치가 활성화되었을 때 파티션 내부 파일 선행 정렬(Defrag) 수행
-    if ($Optimize) {
-        Write-Host "[옵션 작동] 축소 성공률을 높이기 위해 내부 파일 최적화를 시작합니다." -ForegroundColor Skip
-        Write-Host "1/3. 디스크 임시 마운트 중..." -ForegroundColor DarkGray
+    try {
+        $targetSizeBytes = $SizeGB * 1GB
         
-        # 임시 마운트 스크립트 작성 및 실행
-        "select vdisk file=`"$absolutePath`"`nattach vdisk`nexit" | Set-Content -Path $diskpartScriptPath -Encoding OEM
-        $null = diskpart /s $diskpartScriptPath
-        
-        Start-Sleep -Seconds 3 # Windows OS가 드라이브를 정상 인식하기 위한 버퍼 대기
-        
-        # 마운트된 가상 디스크의 드라이브 문자(Drive Letter) 실시간 역추적
-        $driveLetter = (Get-Disk | Where-Object { $_.Location -match $escapedPath -or $_.Path -match $escapedPath } | Get-Partition | Where-Object { $_.DriveLetter }).DriveLetter
-        
-        if ($driveLetter) {
-            Write-Host "2/3. 드라이브($($driveLetter):) 감지 완료. 조각 모음(Defrag) 수행 중..." -ForegroundColor DarkGray
-            # 순수 PowerShell 볼륨 최적화 API를 호출하여 데이터 블록을 앞단으로 꽉 짜서 몰아넣음
-            Optimize-Volume -DriveLetter $driveLetter -Defrag -Verbose
+        # -o 스위치가 활성화되었을 때 파티션 내부 파일 선행 정렬(Defrag) 수행
+        if ($Optimize) {
+            Write-Host "[옵션 작동] 축소 성공률을 높이기 위해 내부 파일 최적화를 시작합니다." -ForegroundColor Yellow
+            Write-Host "1/4. 디스크 마운트 중..." -ForegroundColor DarkGray
+            
+            $mountedVhd = Mount-VHD -Path $absolutePath -PassThru
+            Start-Sleep -Seconds 2
+            
+            # 마운트된 가상 디스크의 드라이브 문자 획득
+            $disk = $mountedVhd | Get-Disk
+            $partition = $disk | Get-Partition | Where-Object { $_.Type -eq "Basic" } | Select-Object -First 1
+            $driveLetter = $partition.DriveLetter
+            
+            if ($driveLetter) {
+                Write-Host "2/4. 드라이브($($driveLetter):) 감지 완료. 조각 모음(Defrag) 수행 중..." -ForegroundColor DarkGray
+                Optimize-Volume -DriveLetter $driveLetter -Defrag -Verbose
+            } else {
+                Write-Host "경고: 드라이브 문자를 추적하지 못해 선행 조각 모음을 건너뜁니다." -ForegroundColor Orange
+            }
+            
+            Write-Host "3/4. 파티션 축소 중..." -ForegroundColor Cyan
+            $partitionSizeInfo = $partition | Get-PartitionSupportedSize
+            $shrinkBuffer = 64MB
+            $desiredPartitionSize = [math]::Min($targetSizeBytes - $shrinkBuffer, $partitionSizeInfo.SizeMax)
+            if ($desiredPartitionSize -lt $partitionSizeInfo.SizeMin) {
+                throw "목표 파티션 크기가 최소 허용 크기보다 작습니다."
+            }
+            Resize-Partition -InputObject $partition -Size $desiredPartitionSize -ErrorAction Stop
+            Write-Host "   -> 파티션이 $([math]::Round($desiredPartitionSize / 1GB, 2)) GB로 축소되었습니다." -ForegroundColor Green
+            
+            Write-Host "VHD 언마운트 중..." -ForegroundColor Cyan
+            Dismount-VHD -Path $absolutePath
         } else {
-            Write-Host "경고: 드라이브 문자를 추적하지 못해 선행 조각 모음을 건너넙니다." -ForegroundColor Orange
+            # 최적화 없이 바로 축소
+            Write-Host "1/3. VHD 마운트 중..." -ForegroundColor Cyan
+            $mountedVhd = Mount-VHD -Path $absolutePath -PassThru
+            Start-Sleep -Seconds 2
+            
+            $disk = $mountedVhd | Get-Disk
+            $partition = $disk | Get-Partition | Where-Object { $_.Type -eq "Basic" } | Select-Object -First 1
+            
+            if ($partition) {
+                Write-Host "2/3. 파티션 축소 중..." -ForegroundColor Cyan
+                $partitionSizeInfo = $partition | Get-PartitionSupportedSize
+                $shrinkBuffer = 64MB
+                $desiredPartitionSize = [math]::Min($targetSizeBytes - $shrinkBuffer, $partitionSizeInfo.SizeMax)
+                if ($desiredPartitionSize -lt $partitionSizeInfo.SizeMin) {
+                    throw "목표 파티션 크기가 최소 허용 크기보다 작습니다."
+                }
+                Resize-Partition -InputObject $partition -Size $desiredPartitionSize -ErrorAction Stop
+                Write-Host "   -> 파티션이 $([math]::Round($desiredPartitionSize / 1GB, 2)) GB로 축소되었습니다." -ForegroundColor Green
+            }
+            
+            Write-Host "VHD 언마운트 중..." -ForegroundColor Cyan
+            Dismount-VHD -Path $absolutePath
         }
         
-        Write-Host "3/3. 사전 최적화 공정 완료. 본 축소 작업을 이어갑니다.`n" -ForegroundColor DarkGray
+        Write-Host "3/3. VHD 파일 크기 조정 중..." -ForegroundColor Cyan
+        Resize-VHD -Path $absolutePath -SizeBytes $targetSizeBytes -ErrorAction Stop
+        Write-Host "   -> VHD 파일이 $([math]::Round($targetSizeBytes / 1GB, 2)) GB로 축소되었습니다." -ForegroundColor Green
+        
+        Write-Host "4/3. 미할당 공간 정리 중..." -ForegroundColor Cyan
+        $mountedVhd = Mount-VHD -Path $absolutePath -PassThru
+        Start-Sleep -Seconds 2
+        $partition = ($mountedVhd | Get-Disk | Get-Partition | Where-Object { $_.Type -eq "Basic" } | Select-Object -First 1)
+        if ($partition) {
+            $maxSize = ($partition | Get-PartitionSupportedSize).SizeMax
+            if ($partition.Size -lt $maxSize) {
+                Resize-Partition -InputObject $partition -Size $maxSize -ErrorAction Stop
+                Write-Host "   -> 파티션이 $([math]::Round($maxSize / 1GB, 2)) GB로 확장되어 미할당 공간이 제거되었습니다." -ForegroundColor Green
+            }
+        }
+        Dismount-VHD -Path $absolutePath
+        
+        Optimize-VHD -Path $absolutePath -Mode Full
+        
+        Write-Host "용량 축소 작업이 완료되었습니다." -ForegroundColor Green
+    } catch {
+        Write-Error "용량 축소 중 오류가 발생했습니다: $_"
+        Exit 1
     }
-    
-    # 본 축소 프로세스 구성 (파티션 선축소 -> 디스크 연결 해제 -> VHD 파일 껍데기 다이어트)
-    $shrinkDeltaMB = $currentSizeMB - $targetSizeMB
-    $scriptContent = @"
-select vdisk file="$absolutePath"
-attach vdisk
-select partition 1
-shrink desired=$shrinkDeltaMB
-detach vdisk
-select vdisk file="$absolutePath"
-compact vdisk
-exit
-"@
-    Set-Content -Path $diskpartScriptPath -Value $scriptContent -Encoding OEM
-    Write-Host "VHD 볼륨 축소 및 용량 최적화(Compact)를 진행 중입니다..." -ForegroundColor Cyan
-    $null = diskpart /s $diskpartScriptPath
 }
 
-# ----------------------------------------------------
-# [4] 임시 파일 정리 및 최종 종료
-# ----------------------------------------------------
-if (Test-Path $diskpartScriptPath) { Remove-Item $diskpartScriptPath -Force }
-
+# ---------------------------------------------------------
+# [4] 최종 완료 메시지
+# ---------------------------------------------------------
 Write-Host "------------------------------------------------"
 Write-Host "모든 가상 디스크 작업이 성공적으로 완료되었습니다." -ForegroundColor Green

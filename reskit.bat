@@ -35,9 +35,10 @@ echo * 기타
 echo 15. 드라이브백업                  16. 드라이브복원
 echo 17. Win11 Setup check bypass      18. 인터넷 연결없이 설치
 echo 19. 업데이트 백업파일 제거        20. Bluetooth Keys Regedit
+echo 21. Hyper-V PowerShell 설치
 echo.
 echo * 인증
-echo 21. Windows 10/11 Pro KMS인증     22. Office KMS인증
+echo 22. Windows 10/11 Pro KMS인증     23. Office KMS인증
 echo.
 echo --------------------------------------------------------------------------
 echo.
@@ -143,11 +144,11 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" 
 
 
 :: zip/cap folder disable
-Reg.exe delete "HKCR\CABFolder\CLSID" /f
-Reg.exe delete "HKCR\CompressedFolder\CLSID" /f
-Reg.exe delete "HKCR\SystemFileAssociations\.cab\CLSID" /f
-Reg.exe delete "HKCR\SystemFileAssociations\.zip\CLSID" /f
-for %%i in (.7z .bz2 .gz .rar .tar .tbz2 .tgz .txz .tzst .xz .zst) do Reg.exe delete "HKCR\SystemFileAssociations\%%i\CLSID" /f
+:: Reg.exe delete "HKCR\CABFolder\CLSID" /f
+:: Reg.exe delete "HKCR\CompressedFolder\CLSID" /f
+:: Reg.exe delete "HKCR\SystemFileAssociations\.cab\CLSID" /f
+:: Reg.exe delete "HKCR\SystemFileAssociations\.zip\CLSID" /f
+:: for %%i in (.7z .bz2 .gz .rar .tar .tbz2 .tgz .txz .tzst .xz .zst) do Reg.exe delete "HKCR\SystemFileAssociations\%%i\CLSID" /f
 
 :: zip/cap folder enable
 :: Reg.exe add "HKCR\CABFolder\CLSID" /ve /t REG_SZ /d "{0CD7A5C0-9F37-11CE-AE65-08002B2E1262}" /f
@@ -361,6 +362,14 @@ goto:eof
 goto:eof
 
 :mainmenu_21
+
+powershell -Command "Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-Management-PowerShell -All"
+:: DISM /Online /Add-Capability /CapabilityName:WMIC~~~~
+
+goto:eof
+
+
+:mainmenu_22
 SET INET_HST=kms.digiboy.ir
 
 SET /P IN_HST="KMS Host (INET:%INET_HST% -> 127.0.0.1): "
@@ -390,7 +399,7 @@ pause
 
 goto:eof
 
-:mainmenu_22
+:mainmenu_23
 SET INET_HST=kms.digiboy.ir
 
 SET /P IN_HST="KMS Host (INET:%INET_HST% -> 127.0.0.1): "

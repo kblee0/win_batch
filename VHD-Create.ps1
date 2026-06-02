@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    외부 유틸리티 및 C# 코드 없이, 순수 파워셸 및 인메모리 diskpart 조합으로
+    Hyper-V PowerShell 모듈을 사용하여
     VHDX 가상 디스크 생성, 자동 마운트 등록, Everyone 독점 권한 설정을 수행합니다.
     powershell -NoProfile -ExecutionPolicy Bypass -File VHD-Create.ps1 C:\img\doc.vhdx  5 -l 'Document' -e
 #>
@@ -11,6 +11,17 @@ param(
     [Parameter()] [string]$l,
     [Parameter()] [switch]$e
 )
+
+# ---------------------------------------------------------
+# Hyper-V PowerShell 모듈 로드
+# ---------------------------------------------------------
+try {
+    Import-Module Hyper-V -ErrorAction Stop
+} catch {
+    Write-Host "`n[오류] Hyper-V PowerShell 모듈을 로드할 수 없습니다." -ForegroundColor Red
+    Write-Host "Hyper-V 기능이 설치되어 있는지 확인하세요." -ForegroundColor Yellow
+    exit 1
+}
 
 # ---------------------------------------------------------
 # 사용법 및 도움말(Help) 안내 출력
@@ -50,34 +61,39 @@ if (Test-Path $ImagePath) {
 }
 
 try {
-    # 1. 가상 디스크 생성 및 포맷 (diskpart 인메모리 파이프라인)
-    Write-Host "`n1. 가상 디스크 생성 및 NTFS 포맷 중 ($SizeGB GB)..." -ForegroundColor Cyan
-    $sizeMB = $SizeGB * 1024
+    # 1. Hyper-V를 통한 가상 디스크 생성
+    Write-Host "`n1. 가상 디스크 생성 중 ($SizeGB GB)..." -ForegroundColor Cyan
+    $sizeBytes = $SizeGB * 1GB
     $volumeLabel = if ([string]::IsNullOrWhiteSpace($l)) { "" } else { $l }
 
-    $diskpartCommands = @(
-        "create vdisk file=`"$ImagePath`" maximum=$sizeMB type=expandable",
-        "attach vdisk",
-        "convert gpt",
-        "create partition primary",
-        "format fs=ntfs label=`"$volumeLabel`" quick",
-        "assign"
-    )
+    # New-VHD로 확장 가능한 VHDX 파일 생성
+    $vhdFile = New-VHD -Path $ImagePath -SizeBytes $sizeBytes -Dynamic
+    Write-Host "   -> VHD 파일 생성 완료: $ImagePath" -ForegroundColor Green
     
-    if (-not $e) { $diskpartCommands += "detach vdisk" }
-    $diskpartCommands | diskpart | Out-Null
+    # 2. 가상 디스크 마운트
+    Write-Host "2. 가상 디스크 마운트 중..." -ForegroundColor Cyan
+    $mountedVhd = Mount-VHD -Path $ImagePath -PassThru
+    $diskNumber = $mountedVhd.DiskNumber
+    
+    # 디스크 초기화 (GPT 파티션 테이블)
+    Write-Host "3. 디스크 초기화 및 파티션 생성 중..." -ForegroundColor Cyan
+    Initialize-Disk -Number $diskNumber -PartitionStyle GPT -ErrorAction Stop | Out-Null
+    
+    # 파티션 생성
+    $partition = New-Partition -DiskNumber $diskNumber -UseMaximumSize -AssignDriveLetter
+    $driveLetter = $partition.DriveLetter
+    
+    # NTFS 포맷
+    Write-Host "4. NTFS 포맷 중..." -ForegroundColor Cyan
+    Format-Volume -DriveLetter $driveLetter -FileSystem NTFS -NewFileSystemLabel $volumeLabel -Confirm:$false | Out-Null
 
-    # 2. Everyone 독점 보안 권한 설정 (-e 스위치 활성화 시)
+    # 5. Everyone 독점 보안 권한 설정 (-e 스위치 활성화 시)
     if ($e) {
-        Write-Host "2. [-e] Everyone 독점 보안 권한(ACL) 설정 적용 중..." -ForegroundColor Yellow
-        Start-Sleep -Seconds 1
+        Write-Host "5. [-e] Everyone 독점 보안 권한(ACL) 설정 적용 중..." -ForegroundColor Yellow
+        Start-Sleep -Milliseconds 500
 
-        # 가상 디스크 객체로부터 활성화된 드라이브 마운트 경로 추출
-        $targetPath = (Get-DiskImage -ImagePath $ImagePath | Get-Disk | Get-Partition | 
-                       Where-Object { $_.Type -eq "Basic" }).AccessPaths | 
-                       Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -First 1
-        
-        if (-not $targetPath) { throw "볼륨의 유효 마운트 경로를 식별할 수 없습니다." }
+        # 마운트된 드라이브의 루트 경로
+        $targetPath = "$($driveLetter):\"
 
         # 순수 파워셸 개체 모델 기반 ACL 완전 초기화 
         $everyoneAccount = New-Object System.Security.Principal.NTAccount("Everyone")
@@ -92,16 +108,19 @@ try {
         $acl.ResetAccessRule($fullControlRule)
         
         Set-Acl -LiteralPath $targetPath -AclObject $acl
-        Dismount-DiskImage -ImagePath $ImagePath | Out-Null
-        Write-Host "-> 소유권 이전 및 Everyone 단독 권한 할당이 완료되었습니다." -ForegroundColor Green
+        Write-Host "   -> 소유권 이전 및 Everyone 단독 권한 할당 완료" -ForegroundColor Green
     }
+    
+    # 6. 가상 디스크 언마운트
+    Write-Host "6. 가상 디스크 언마운트 중..." -ForegroundColor Cyan
+    Dismount-VHD -Path $ImagePath | Out-Null
 
     Write-Host "`n[성공] VHDX 가상 디스크 생성이 완료되었습니다.`n" -ForegroundColor Green
 
 } catch {
     Write-Host "`n[오류 발생] $_" -ForegroundColor Red
     if (Test-Path $ImagePath) {
-        Dismount-DiskImage -ImagePath $ImagePath -ErrorAction SilentlyContinue | Out-Null
+        Dismount-VHD -Path $ImagePath -ErrorAction SilentlyContinue | Out-Null
         Remove-Item -Path $ImagePath -Force -ErrorAction SilentlyContinue
     }
     exit 1
