@@ -179,7 +179,7 @@ if ($targetSizeMB -gt $currentSizeMB) {
         # -o 스위치가 활성화되었을 때 파티션 내부 파일 선행 정렬(Defrag) 수행
         if ($Optimize) {
             Write-Host "[옵션 작동] 축소 성공률을 높이기 위해 내부 파일 최적화를 시작합니다." -ForegroundColor Yellow
-            Write-Host "1/4. 디스크 마운트 중..." -ForegroundColor DarkGray
+            Write-Host "디스크 마운트 중..." -ForegroundColor DarkGray
             
             $mountedVhd = Mount-VHD -Path $absolutePath -PassThru
             Start-Sleep -Seconds 2
@@ -190,13 +190,13 @@ if ($targetSizeMB -gt $currentSizeMB) {
             $driveLetter = $partition.DriveLetter
             
             if ($driveLetter) {
-                Write-Host "2/4. 드라이브($($driveLetter):) 감지 완료. 조각 모음(Defrag) 수행 중..." -ForegroundColor DarkGray
+                Write-Host "드라이브($($driveLetter):) 감지 완료. 조각 모음(Defrag) 수행 중..." -ForegroundColor DarkGray
                 Optimize-Volume -DriveLetter $driveLetter -Defrag -Verbose
             } else {
                 Write-Host "경고: 드라이브 문자를 추적하지 못해 선행 조각 모음을 건너뜁니다." -ForegroundColor Orange
             }
             
-            Write-Host "3/4. 파티션 축소 중..." -ForegroundColor Cyan
+            Write-Host "파티션 축소 중..." -ForegroundColor Cyan
             $partitionSizeInfo = $partition | Get-PartitionSupportedSize
             $shrinkBuffer = 64MB
             $desiredPartitionSize = [math]::Min($targetSizeBytes - $shrinkBuffer, $partitionSizeInfo.SizeMax)
@@ -210,7 +210,7 @@ if ($targetSizeMB -gt $currentSizeMB) {
             Dismount-VHD -Path $absolutePath
         } else {
             # 최적화 없이 바로 축소
-            Write-Host "1/3. VHD 마운트 중..." -ForegroundColor Cyan
+            Write-Host "VHD 마운트 중..." -ForegroundColor Cyan
             $mountedVhd = Mount-VHD -Path $absolutePath -PassThru
             Start-Sleep -Seconds 2
             
@@ -218,7 +218,7 @@ if ($targetSizeMB -gt $currentSizeMB) {
             $partition = $disk | Get-Partition | Where-Object { $_.Type -eq "Basic" } | Select-Object -First 1
             
             if ($partition) {
-                Write-Host "2/3. 파티션 축소 중..." -ForegroundColor Cyan
+                Write-Host "파티션 축소 중..." -ForegroundColor Cyan
                 $partitionSizeInfo = $partition | Get-PartitionSupportedSize
                 $shrinkBuffer = 64MB
                 $desiredPartitionSize = [math]::Min($targetSizeBytes - $shrinkBuffer, $partitionSizeInfo.SizeMax)
@@ -233,11 +233,11 @@ if ($targetSizeMB -gt $currentSizeMB) {
             Dismount-VHD -Path $absolutePath
         }
         
-        Write-Host "3/3. VHD 파일 크기 조정 중..." -ForegroundColor Cyan
+        Write-Host "VHD 파일 크기 조정 중..." -ForegroundColor Cyan
         Resize-VHD -Path $absolutePath -SizeBytes $targetSizeBytes -ErrorAction Stop
         Write-Host "   -> VHD 파일이 $([math]::Round($targetSizeBytes / 1GB, 2)) GB로 축소되었습니다." -ForegroundColor Green
         
-        Write-Host "4/3. 미할당 공간 정리 중..." -ForegroundColor Cyan
+        Write-Host "미할당 공간 정리 중..." -ForegroundColor Cyan
         $mountedVhd = Mount-VHD -Path $absolutePath -PassThru
         Start-Sleep -Seconds 2
         $partition = ($mountedVhd | Get-Disk | Get-Partition | Where-Object { $_.Type -eq "Basic" } | Select-Object -First 1)
