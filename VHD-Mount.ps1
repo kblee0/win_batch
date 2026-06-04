@@ -115,8 +115,7 @@ catch {
 # ---------------------------------------------------------
 if ($u) {
     try {
-        Write-Host "`n언마운트 중..." -ForegroundColor Cyan
-        Write-Host "  $ImagePath`n"
+        Write-Host "$ImagePath 언마운트 중..." -ForegroundColor Cyan
 
         $img = Get-DiskImage -ImagePath $ImagePath -ErrorAction Stop
 
@@ -130,11 +129,11 @@ if ($u) {
                 -ErrorAction Stop
         }
 
-        Write-Host "언마운트 완료.`n" -ForegroundColor Green
+        Write-Host "언마운트 완료." -ForegroundColor Green
         exit 0
     }
     catch {
-        Write-Host "`n[오류] $_`n" -ForegroundColor Red
+        Write-Host "[오류] $_`n" -ForegroundColor Red
         exit 1
     }
 }
@@ -145,8 +144,7 @@ if ($u) {
 try {
     $accessMode = if ($r) { "ReadOnly" } else { "ReadWrite" }
 
-    Write-Host "`n마운트 중 ($accessMode)..." -ForegroundColor Cyan
-    Write-Host "  $ImagePath`n"
+    Write-Host "'$ImagePath'에 마운트 중 ($accessMode)..." -ForegroundColor Cyan
 
     $diskImage = Mount-DiskImage `
         -ImagePath $ImagePath `
@@ -167,13 +165,22 @@ try {
 
     # 기존 마운트 제거
     Remove-AllPartitionAccessPaths $partition
-
-    $target = $TargetPath.Trim()
-
-    if (-not $target.EndsWith("\")) {
-        $target += "\"
+    
+    # TargetPath 처리
+    $target = $TargetPath
+    if($target -notmatch '^[A-Za-z]:$') {
+        try {
+            $target = (Resolve-Path $target -ErrorAction Stop).Path
+        }
+        catch {
+            Write-Host "[오류] 마운트 포인트를 찾을 수 없습니다: $_" -ForegroundColor Red
+            if ($diskImage) {
+                Dismount-DiskImage -ImagePath $ImagePath -ErrorAction SilentlyContinue | Out-Null
+            }
+            exit 1
+        }
     }
-    Write-Host "마운트: $target`n"
+    $target += "\"
 
     Add-PartitionAccessPath `
         -DiskNumber $partition.DiskNumber `
@@ -184,7 +191,7 @@ try {
     Write-Host "마운트 완료.`n" -ForegroundColor Green
 }
 catch {
-    Write-Host "`n[오류] $_`n" -ForegroundColor Red
+    Write-Host "[오류] $_" -ForegroundColor Red
     if ($diskImage) {
         Dismount-DiskImage `
             -ImagePath $ImagePath `
