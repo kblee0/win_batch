@@ -15,6 +15,9 @@ doskey kill = taskkill /PID $*
 doskey ll = dir $* /w
 doskey ls = dir $*
 doskey pshell=powershell -NoProfile -ExecutionPolicy Bypass -File $*
+doskey vmount=gsudo powershell -NoProfile -ExecutionPolicy Bypass -File c:\home\proj\win_batch\VHD-Mount.ps1 $*
+doskey vcreate=gsudo powershell -NoProfile -ExecutionPolicy Bypass -File c:\home\proj\win_batch\VHD-Create.ps1 $*
+doskey vresize=gsudo powershell -NoProfile -ExecutionPolicy Bypass -File c:\home\proj\win_batch\VHD-Resize.ps1 $*
 doskey setpub=gsudo powershell -NoProfile -ExecutionPolicy Bypass -File C:\home\proj\win_batch\Set-FolderEveryone.ps1 $*
 
 doskey mv = move $*
