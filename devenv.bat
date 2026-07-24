@@ -51,17 +51,17 @@ call :sys_path_append %%%%JAVA_HOME%%%%\bin
 :: -------------------------------------------
 :: Maven
 :: -------------------------------------------
-
-setx /M M2_HOME C:\home\dev\apache-maven-3.9.9
-
+setx /M MAVEN_HOME=C:\home\dev\apache-maven-3.9.16
+setx /M M2_HOME %MAVEN_HOME%
+setx /M MAVEN_OPTS -Dmaven.repo.local=C:\home\dev\.data\maven
 call :sys_path_append %%%%M2_HOME%%%%\bin
 
 :: -------------------------------------------
 :: Gradle
 :: -------------------------------------------
 
-setx /M GRADLE_HOME C:\home\dev\gradle-8.13
-setx /M GRADLE_USER_HOME C:\home\dev\.data\gradle\repo
+setx /M GRADLE_HOME C:\home\dev\gradle-9.6.1
+setx /M GRADLE_USER_HOME C:\home\dev\.data\gradle
 
 call :sys_path_append %%%%GRADLE_HOME%%%%\bin
 
@@ -70,9 +70,9 @@ call :sys_path_append %%%%GRADLE_HOME%%%%\bin
 :: -------------------------------------------
 
 setx /M NVM_HOME c:\home\dev\nvm
+setx /M NPM_CONFIG_USERCONFIG C:\home\dev\nvm\.npmrc
 call :sys_path_append %%%%NVM_HOME%%%%
 call :sys_path_append node_modules\.bin
-call :sys_path_append %%%%NVM_HOME%%%%\nodejs\.npm\global
 call :sys_path_append %%%%NVM_HOME%%%%\nodejs
 
 :: -------------------------------------------
@@ -127,8 +127,6 @@ echo C:\home\dev\git\bin\git config --global user.name "kblee0"
 echo C:\home\dev\git\bin\git config --global user.email kblee0@gmail.com
 echo C:\home\dev\git\bin\git config --global credential.helper manager
 echo C:\home\dev\git\bin\git config --global --add safe.directory *
-echo C:\home\dev\nvm\nodejs\npm config -g set prefix C:\home\dev\nvm\nodejs\.npm\global
-echo C:\home\dev\nvm\nodejs\npm config -g set cache C:\home\dev\nvm\nodejs\.npm\cache
 echo C:\home\dev\miniconda\condabin\conda config --system --append envs_dirs c:\home\dev\.data\miniconda
 
 pause
