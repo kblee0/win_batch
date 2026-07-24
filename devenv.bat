@@ -78,6 +78,7 @@ call :sys_path_append %%%%NVM_HOME%%%%\nodejs
 :: -------------------------------------------
 :: Git
 :: -------------------------------------------
+setx /M GIT_CONFIG_GLOBAL C:\home\dev\.config\git\.gitconfig
 call :sys_path_append C:\home\dev\git\bin
 
 :: -------------------------------------------
@@ -123,10 +124,22 @@ echo -------------------------------------------
 echo type below command unber user command env
 echo -------------------------------------------
 
-echo C:\home\dev\git\bin\git config --global user.name "kblee0"
-echo C:\home\dev\git\bin\git config --global user.email kblee0@gmail.com
-echo C:\home\dev\git\bin\git config --global credential.helper manager
-echo C:\home\dev\git\bin\git config --global --add safe.directory *
+echo git config --global pull.ff only
+echo git config --global fetch.prune true
+echo git config --global rebase.autoStash true
+echo git config --global push.default simple
+echo git config --global init.defaultBranch main
+:: echo git config --global credential.helper manager
+echo git config --global credential.helper store
+echo git config --global core.autocrlf false
+echo git config --global core.filemode false
+echo git config --global merge.conflictStyle zdiff3
+echo git config --global core.filemode false
+echo git config --global merge.conflictStyle zdiff3
+echo git config --global --add safe.directory *
+echo git config --global credential.helper "store --file=C:/home/dev/.config/git/.git-credentials"
+echo git config --global user.name "kblee0"
+echo git config --global user.email kblee0@gmail.com
 echo C:\home\dev\miniconda\condabin\conda config --system --append envs_dirs c:\home\dev\.data\miniconda
 
 pause
