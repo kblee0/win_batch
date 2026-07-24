@@ -1,4 +1,4 @@
-@echo off 
+@echo off
 if "%1" == "-i" Reg.exe add "HKCU\SOFTWARE\Microsoft\Command Processor" /v "AutoRun" /t REG_SZ /d %~dpnx0 /f
 
 SET PATH=%PATH%;C:\home\bin;C:\home\local\bin;C:\home\proj\win_batch
@@ -15,6 +15,7 @@ doskey kill = taskkill /PID $*
 doskey ll = dir $* /w
 doskey ls = dir $*
 doskey pshell=powershell -NoProfile -ExecutionPolicy Bypass -File $*
+doskey spshell=gsudo powershell -NoProfile -ExecutionPolicy Bypass -File $*
 doskey setpub=gsudo powershell -NoProfile -ExecutionPolicy Bypass -File C:\home\proj\win_batch\Set-FolderEveryone.ps1 $*
 
 doskey mv = move $*
@@ -31,6 +32,7 @@ doskey nc=c:\home\local\nmap\ncat.exe -w 1 $*
 doskey notepad="C:\home\local\npp\notepad++.exe" $*
 doskey vi="C:\home\local\npp\notepad++.exe" $*
 doskey nvm = IF "$1" == "use" (nvmuse $2 $3 $4) ELSE (nvm $*)
+doskey pyvenv=C:\home\dev\pyenv\venv.bat
 
 IF NOT EXIST c:\windows\system32\sudo.exe doskey sudo=c:\usr\bin\gsudo.exe $*
 IF EXIST C:\home\android\platform-tools\adb.exe doskey adb=C:\home\android\platform-tools\adb.exe $*

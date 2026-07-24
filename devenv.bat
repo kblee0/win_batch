@@ -45,7 +45,7 @@ setx /M WEBIDE_PROPERTIES   c:\home\dev\.config\WebStorm.properties
 :: JAVA
 :: -------------------------------------------
 
-setx /M JAVA_HOME C:\home\dev\Java\jdk-21.0.4+7
+setx /M JAVA_HOME C:\home\dev\Java\jdk-21.0.11+10
 call :sys_path_append %%%%JAVA_HOME%%%%\bin
 
 :: -------------------------------------------
@@ -84,12 +84,11 @@ call :sys_path_append C:\home\dev\git\bin
 :: Python
 :: -------------------------------------------
 :: git clone https://github.com/pyenv-win/pyenv-win.git c:\home\dev\pyenv
-setx /M PYENV C:\home\dev\pyenv\pyenv-win
 setx /M PYENV_ROOT C:\home\dev\pyenv\pyenv-win
+setx /M PYENV C:\home\dev\pyenv\pyenv-win
 :: set PATH=%PYENV%\bin;%PYENV%\shims;%PATH%
 call :sys_path_append %%%%PYENV%%%%\bin
 call :sys_path_append %%%%PYENV%%%%\shims
-
 
 :: -------------------------------------------
 :: SVN
