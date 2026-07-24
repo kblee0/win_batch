@@ -9,9 +9,8 @@ goto main
 
 :sys_path_append
 set "TARGET_PATH=%~1"
-set "FOUND=0"
-for %%D in ("%SYS_PATH:;=" "%") do if /I "%%~D"=="%TARGET_PATH%" set "FOUND=1"
-if "%FOUND%"=="0" set "SYS_PATH=%SYS_PATH%;%TARGET_PATH%"
+for %%D in ("%SYS_PATH:;=" "%") do if /I "%%~D"=="%TARGET_PATH%" goto :eof
+set "SYS_PATH=%SYS_PATH%;%TARGET_PATH%"
 goto :eof
 ::-------------------------------------------------------------------------
 
@@ -49,12 +48,12 @@ setx /M JAVA_HOME C:\home\dev\Java\jdk-21.0.11+10
 call :sys_path_append %%%%JAVA_HOME%%%%\bin
 
 :: -------------------------------------------
-:: Maven
+:: Maven : M2_HOME 호환설정
 :: -------------------------------------------
-setx /M MAVEN_HOME=C:\home\dev\apache-maven-3.9.16
-setx /M M2_HOME %MAVEN_HOME%
+setx /M MAVEN_HOME C:\home\dev\apache-maven-3.9.16
+setx /M M2_HOME %%MAVEN_HOME%%
 setx /M MAVEN_OPTS -Dmaven.repo.local=C:\home\dev\.data\maven
-call :sys_path_append %%%%M2_HOME%%%%\bin
+call :sys_path_append %%%%MAVEN_HOME%%%%\bin
 
 :: -------------------------------------------
 :: Gradle
@@ -70,7 +69,7 @@ call :sys_path_append %%%%GRADLE_HOME%%%%\bin
 :: -------------------------------------------
 
 setx /M NVM_HOME c:\home\dev\nvm
-setx /M NPM_CONFIG_USERCONFIG C:\home\dev\nvm\.npmrc
+setx /M NPM_CONFIG_USERCONFIG %%NVM_HOME%%\.npmrc
 call :sys_path_append %%%%NVM_HOME%%%%
 call :sys_path_append node_modules\.bin
 call :sys_path_append %%%%NVM_HOME%%%%\nodejs
@@ -82,14 +81,14 @@ setx /M GIT_CONFIG_GLOBAL C:\home\dev\.config\git\.gitconfig
 call :sys_path_append C:\home\dev\git\bin
 
 :: -------------------------------------------
-:: Python
+:: Python : PYENV 호환설정
 :: -------------------------------------------
 :: git clone https://github.com/pyenv-win/pyenv-win.git c:\home\dev\pyenv
 setx /M PYENV_ROOT C:\home\dev\pyenv\pyenv-win
-setx /M PYENV C:\home\dev\pyenv\pyenv-win
-:: set PATH=%PYENV%\bin;%PYENV%\shims;%PATH%
-call :sys_path_append %%%%PYENV%%%%\bin
-call :sys_path_append %%%%PYENV%%%%\shims
+setx /M PYENV %%PYENV_ROOT%%
+:: set PATH=%PYENV_ROOT%\bin;%PYENV_ROOT%\shims;%PATH%
+call :sys_path_append %%%%PYENV_ROOT%%%%\bin
+call :sys_path_append %%%%PYENV_ROOT%%%%\shims
 
 :: -------------------------------------------
 :: SVN
@@ -103,8 +102,8 @@ call :sys_path_append C:\home\dev\svn\bin
 :: Invoke-WebRequest -Uri "https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe"  -OutFile "$env:TEMP\Miniconda3-latest-Windows-x86_64.exe"
 :: "$env:TEMP\Miniconda3-latest-Windows-x86_64.exe" /InstallationType=JustMe /AddToPath=0 /S /RegisterPython=0 /NoRegistry=1 /NoScripts=1 /NoShortcuts=1 /D=C:\home\dev\miniconda
 
-call :sys_path_append C:\home\dev\miniconda\condabin
-call :sys_path_append C:\home\dev\miniconda\Scripts
+:: call :sys_path_append C:\home\dev\miniconda\condabin
+:: call :sys_path_append C:\home\dev\miniconda\Scripts
 
 :: conda config --system --append envs_dirs c:\home\dev\.data\miniconda
 :: conda create -n venv python=3.13.3
