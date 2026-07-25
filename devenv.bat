@@ -2,28 +2,12 @@
 
 setlocal
 
-::-------------------------------------------------------------------------
-:: Functions
-::-------------------------------------------------------------------------
-goto main
-
-:sys_path_append
-set "TARGET_PATH=%~1"
-for %%D in ("%SYS_PATH:;=" "%") do if /I "%%~D"=="%TARGET_PATH%" goto :eof
-set "SYS_PATH=%SYS_PATH%;%TARGET_PATH%"
-goto :eof
-::-------------------------------------------------------------------------
-
-:main
+SET DEVHOME=C:\home\dev
 
 :: Check if running as administrator
 Reg.exe query "HKU\S-1-5-19\Environment"
 If Not %ERRORLEVEL% EQU 0 (
-	if exist %SystemRoot%\system32\sudo.exe (
-		sudo --inline %~f0
-	) else (
-		Echo You must have administrator rights to continue ...
-	)
+    Echo You must have administrator rights to continue ...
 	Exit /B
 )
 Cls
@@ -35,86 +19,104 @@ for /f "skip=2 tokens=2,*" %%A in ('reg query "HKLM\System\CurrentControlSet\Con
 :: Jetbrain
 :: -------------------------------------------
 
-setx /M IDEA_PROPERTIES     c:\home\dev\.config\IntelliJ.properties
-setx /M PYCHARM_PROPERTIES  c:\home\dev\.config\PyCharm.properties
-setx /M DATAGRIP_PROPERTIES c:\home\dev\.config\DataGrip.properties
-setx /M WEBIDE_PROPERTIES   c:\home\dev\.config\WebStorm.properties
+setx /M IDEA_PROPERTIES     %DEVHOME%\.config\IntelliJ.properties
+setx /M PYCHARM_PROPERTIES  %DEVHOME%\.config\PyCharm.properties
+setx /M DATAGRIP_PROPERTIES %DEVHOME%\.config\DataGrip.properties
+setx /M WEBIDE_PROPERTIES   %DEVHOME%\.config\WebStorm.properties
 
 :: -------------------------------------------
 :: JAVA
 :: -------------------------------------------
 
-setx /M JAVA_HOME C:\home\dev\Java\jdk-21.0.11+10
-call :sys_path_append %%%%JAVA_HOME%%%%\bin
+setx /M JAVA_HOME %DEVHOME%\Java\jdk-21.0.11+10
+SET SYS_PATH=%SYS_PATH%;%%JAVA_HOME%%\bin
 
 :: -------------------------------------------
-:: Maven : M2_HOME í˜¸í™˜ì„¤ì •
+:: Maven : M2_HOME È£È¯¼³Á¤
 :: -------------------------------------------
-setx /M MAVEN_HOME C:\home\dev\apache-maven-3.9.16
+setx /M MAVEN_HOME %DEVHOME%\apache-maven-3.9.16
 setx /M M2_HOME %%MAVEN_HOME%%
-setx /M MAVEN_OPTS -Dmaven.repo.local=C:\home\dev\.data\maven
-call :sys_path_append %%%%MAVEN_HOME%%%%\bin
+setx /M MAVEN_OPTS -Dmaven.repo.local=%DEVHOME%\.data\maven
+SET SYS_PATH=%SYS_PATH%;%%MAVEN_HOME%%\bin
 
 :: -------------------------------------------
 :: Gradle
 :: -------------------------------------------
 
-setx /M GRADLE_HOME C:\home\dev\gradle-9.6.1
-setx /M GRADLE_USER_HOME C:\home\dev\.data\gradle
+setx /M GRADLE_HOME %DEVHOME%\gradle-9.6.1
+setx /M GRADLE_USER_HOME %DEVHOME%\.data\gradle
 
-call :sys_path_append %%%%GRADLE_HOME%%%%\bin
+SET SYS_PATH=%SYS_PATH%;%%GRADLE_HOME%%\bin
 
 :: -------------------------------------------
 :: Node
 :: -------------------------------------------
 
-setx /M NVM_HOME c:\home\dev\nvm
+setx /M NVM_HOME %DEVHOME%\nvm
 setx /M NPM_CONFIG_USERCONFIG %%NVM_HOME%%\.npmrc
-call :sys_path_append %%%%NVM_HOME%%%%
-call :sys_path_append node_modules\.bin
-call :sys_path_append %%%%NVM_HOME%%%%\nodejs
+SET SYS_PATH=%SYS_PATH%;%%NVM_HOME%%
+SET SYS_PATH=%SYS_PATH%;node_modules\.bin
+SET SYS_PATH=%SYS_PATH%;%%NVM_HOME%%\nodejs
 
 :: -------------------------------------------
 :: Git
 :: -------------------------------------------
-setx /M GIT_CONFIG_GLOBAL C:\home\dev\.config\git\.gitconfig
-call :sys_path_append C:\home\dev\git\bin
+setx /M GIT_CONFIG_GLOBAL %DEVHOME%\.config\git\.gitconfig
+SET SYS_PATH=%SYS_PATH%;%DEVHOME%\git\bin
 
 :: -------------------------------------------
-:: Python : PYENV í˜¸í™˜ì„¤ì •
+:: Python : PYENV È£È¯¼³Á¤
 :: -------------------------------------------
-:: git clone https://github.com/pyenv-win/pyenv-win.git c:\home\dev\pyenv
-setx /M PYENV_ROOT C:\home\dev\pyenv\pyenv-win
+:: git clone https://github.com/pyenv-win/pyenv-win.git %DEVHOME%\pyenv
+setx /M PYENV_ROOT %DEVHOME%\pyenv\pyenv-win
 setx /M PYENV %%PYENV_ROOT%%
-:: set PATH=%PYENV_ROOT%\bin;%PYENV_ROOT%\shims;%PATH%
-call :sys_path_append %%%%PYENV_ROOT%%%%\bin
-call :sys_path_append %%%%PYENV_ROOT%%%%\shims
+SET SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\bin
+SET SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\shims
 
 :: -------------------------------------------
 :: SVN
 :: -------------------------------------------
-call :sys_path_append C:\home\dev\svn\bin
+SET SYS_PATH=%SYS_PATH%;%DEVHOME%\svn\bin
 
 
 :: -------------------------------------------
 :: miniconda
 :: -------------------------------------------
 :: Invoke-WebRequest -Uri "https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe"  -OutFile "$env:TEMP\Miniconda3-latest-Windows-x86_64.exe"
-:: "$env:TEMP\Miniconda3-latest-Windows-x86_64.exe" /InstallationType=JustMe /AddToPath=0 /S /RegisterPython=0 /NoRegistry=1 /NoScripts=1 /NoShortcuts=1 /D=C:\home\dev\miniconda
+:: "$env:TEMP\Miniconda3-latest-Windows-x86_64.exe" /InstallationType=JustMe /AddToPath=0 /S /RegisterPython=0 /NoRegistry=1 /NoScripts=1 /NoShortcuts=1 /D=%DEVHOME%\miniconda
 
-:: call :sys_path_append C:\home\dev\miniconda\condabin
-:: call :sys_path_append C:\home\dev\miniconda\Scripts
+:: SET SYS_PATH=%SYS_PATH%;%DEVHOME%\miniconda\condabin
+:: SET SYS_PATH=%SYS_PATH%;%DEVHOME%\miniconda\Scripts
 
-:: conda config --system --append envs_dirs c:\home\dev\.data\miniconda
+:: conda config --system --append envs_dirs %DEVHOME%\.data\miniconda
 :: conda create -n venv python=3.13.3
 
 :: --------- Global Path --------
-setx /M PATH "%SYS_PATH%"
+:: Path Áßº¹ Á¦°Å ÈÄ ¼³Á¤
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+    "$path = $env:SYS_PATH;" ^
+    "if (-not $path -or $path.Trim() -eq '') {" ^
+    "    Write-Error 'SYS_PATH È¯°æ º¯¼ö°¡ ¼³Á¤µÇÁö ¾Ê¾Ò°Å³ª °ªÀÌ ºñ¾î ÀÖ½À´Ï´Ù. (ÀÛ¾÷ Áß´Ü)';" ^
+    "    exit 1;" ^
+    "};" ^
+    "$uniquePath = ($path -split ';' | Where-Object { $_.Trim() -ne '' } | Select-Object -Unique) -join ';';" ^
+    "[Environment]::SetEnvironmentVariable('PATH', $uniquePath, 'Machine');" ^
+    "Write-Output ('[M] PATH=' + $uniquePath);"
 
 :: -------------------------------------------
 :: Secure environment variables
 :: -------------------------------------------
-IF EXIST "%~dp0secureenv.bat" CALL "%~dp0secureenv.bat"
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+    "$dir = 'secure';" ^
+    "if (-not (Test-Path $dir)) { Write-Error "'$dir' µð·ºÅä¸®¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù."; exit 1 };" ^
+    "Get-ChildItem -Path $dir -File | ForEach-Object {" ^
+    "    $name = $_.Name;" ^
+    "    $val = (Get-Content -Path $_.FullName -Raw).Trim();" ^
+    "    if ($val) {" ^
+    "        [Environment]::SetEnvironmentVariable($name, $val, 'User');" ^
+    "        Write-Output \"[U] $name=$val\";" ^
+    "    }" ^
+    "}"
 
 :: -------------------------------------------
 :: User setting
@@ -126,18 +128,20 @@ echo -------------------------------------------
 echo git config --global pull.ff only
 echo git config --global fetch.prune true
 echo git config --global rebase.autoStash true
-echo
+echo.
 echo git config --global push.default simple
 echo git config --global push.autoSetupRemote true
 echo git config --global init.defaultBranch main
-echo
+echo.
 echo git config --global core.autocrlf false
 echo git config --global core.filemode false
 echo git config --global merge.conflictStyle zdiff3
-echo
+echo.
 echo git config --global credential.helper "store --file=C:/home/dev/.config/git/.git-credentials"
-echo
+echo.
 echo git config --global user.name "kblee0"
 echo git config --global user.email "kblee0@gmail.com"
+
+endlocal
 
 pause
