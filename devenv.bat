@@ -49,11 +49,11 @@ set SYS_PATH=%SYS_PATH%;%%GRADLE_HOME%%\bin
 :: Node
 :: -------------------------------------------
 setx /M NVM_HOME %DEVHOME%\nvm
-setx /M NPM_CONFIG_USERCONFIG %DEVHOME%\nvm\.npmrc
+setx /M NPM_CONFIG_USERCONFIG %%NVM_HOME%%\.npmrc
 
-set SYS_PATH=%SYS_PATH%;%%NVM_HOME%%
-set SYS_PATH=%SYS_PATH%;node_modules\.bin
-set SYS_PATH=%SYS_PATH%;%%NVM_HOME%%\nodejs
+SET SYS_PATH=%SYS_PATH%;%%NVM_HOME%%
+SET SYS_PATH=%SYS_PATH%;node_modules\.bin
+SET SYS_PATH=%SYS_PATH%;%%NVM_HOME%%\nodejs
 
 :: -------------------------------------------
 :: Git
@@ -90,6 +90,7 @@ set SYS_PATH=%SYS_PATH%;%DEVHOME%\svn\bin
 :: conda create -n venv python=3.13.3
 
 :: --------- Global Path --------
+:: Path 중복 제거 후 설정
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
     "$path = $env:SYS_PATH;" ^
     "if (-not $path -or $path.Trim() -eq '') {" ^
