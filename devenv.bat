@@ -1,23 +1,21 @@
 @echo off
-
 setlocal
 set DEVHOME=C:\home\dev
 
 :: Check if running as administrator
-Reg.exe query "HKU\S-1-5-19\Environment"
-If Not %ERRORLEVEL% EQU 0 (
-    Echo You must have administrator rights to continue ...
-	Exit /B
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo 관리자 권한이 필요합니다.
+    exit /b
 )
-Cls
+cls
 
 :: Get system path
-for /f "skip=2 tokens=2,*" %%A in ('reg query "HKLM\System\CurrentControlSet\Control\Session Manager\Environment" /v Path 2^>nul') do SET SYS_PATH=%%B
+for /f "delims=" %%A in ('powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('Path', 'Machine')"') do SET SYS_PATH=%%A
 
 :: -------------------------------------------
 :: Jetbrain
 :: -------------------------------------------
-
 setx /M IDEA_PROPERTIES     %DEVHOME%\.config\IntelliJ.properties
 setx /M PYCHARM_PROPERTIES  %DEVHOME%\.config\PyCharm.properties
 setx /M DATAGRIP_PROPERTIES %DEVHOME%\.config\DataGrip.properties
@@ -26,8 +24,8 @@ setx /M WEBIDE_PROPERTIES   %DEVHOME%\.config\WebStorm.properties
 :: -------------------------------------------
 :: JAVA
 :: -------------------------------------------
-
 setx /M JAVA_HOME %DEVHOME%\Java\jdk-21.0.11+10
+
 set SYS_PATH=%SYS_PATH%;%%JAVA_HOME%%\bin
 
 :: -------------------------------------------
@@ -36,12 +34,12 @@ set SYS_PATH=%SYS_PATH%;%%JAVA_HOME%%\bin
 setx /M MAVEN_HOME %DEVHOME%\apache-maven-3.9.16
 setx /M M2_HOME %%MAVEN_HOME%%
 setx /M MAVEN_OPTS -Dmaven.repo.local=%DEVHOME%\.data\maven
+
 set SYS_PATH=%SYS_PATH%;%%MAVEN_HOME%%\bin
 
 :: -------------------------------------------
 :: Gradle
 :: -------------------------------------------
-
 setx /M GRADLE_HOME %DEVHOME%\gradle-9.6.1
 setx /M GRADLE_USER_HOME %DEVHOME%\.data\gradle
 
@@ -50,9 +48,9 @@ set SYS_PATH=%SYS_PATH%;%%GRADLE_HOME%%\bin
 :: -------------------------------------------
 :: Node
 :: -------------------------------------------
-
 setx /M NVM_HOME %DEVHOME%\nvm
 setx /M NPM_CONFIG_USERCONFIG %DEVHOME%\nvm\.npmrc
+
 set SYS_PATH=%SYS_PATH%;%%NVM_HOME%%
 set SYS_PATH=%SYS_PATH%;node_modules\.bin
 set SYS_PATH=%SYS_PATH%;%%NVM_HOME%%\nodejs
@@ -61,6 +59,7 @@ set SYS_PATH=%SYS_PATH%;%%NVM_HOME%%\nodejs
 :: Git
 :: -------------------------------------------
 setx /M GIT_CONFIG_GLOBAL %DEVHOME%\.config\git\.gitconfig
+
 set SYS_PATH=%SYS_PATH%;%DEVHOME%\git\bin
 
 :: -------------------------------------------
@@ -69,6 +68,7 @@ set SYS_PATH=%SYS_PATH%;%DEVHOME%\git\bin
 :: git clone https://github.com/pyenv-win/pyenv-win.git %DEVHOME%\pyenv
 setx /M PYENV_ROOT %DEVHOME%\pyenv\pyenv-win
 setx /M PYENV %%PYENV_ROOT%%
+
 set SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\bin
 set SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\shims
 
@@ -76,7 +76,6 @@ set SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\shims
 :: SVN
 :: -------------------------------------------
 set SYS_PATH=%SYS_PATH%;%DEVHOME%\svn\bin
-
 
 :: -------------------------------------------
 :: miniconda
