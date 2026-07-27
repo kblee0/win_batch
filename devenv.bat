@@ -122,7 +122,7 @@ echo -------------------------------------------
 echo type below command unber user command env
 echo -------------------------------------------
 
-echo git config --global pull.ff only
+echo git config --global pull.rebase true
 echo git config --global fetch.prune true
 echo git config --global rebase.autoStash true
 echo.
@@ -135,6 +135,9 @@ echo git config --global core.filemode false
 echo git config --global merge.conflictStyle zdiff3
 echo.
 echo git config --global credential.helper "store --file=C:/home/dev/.config/git/.git-credentials"
+echo.
+echo git config --global --unset-all safe.directory
+echo git config --global safe.directory *
 echo.
 echo git config --global user.name "kblee0"
 echo git config --global user.email "kblee0@gmail.com"
