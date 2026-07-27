@@ -1,6 +1,9 @@
 @echo off
 setlocal
 
+set "GUID_kt={bb0223c0-5d5d-11f0-afe1-806e6f6e6963}"
+set "GUID_rnb={bb0223c1-5d5d-11f0-afe1-806e6f6e6963}"
+
 :: 초기 변수 설정
 set "MODE="
 set "TARGET="
@@ -31,13 +34,18 @@ if "%TARGET%"=="" (
     goto usage
 )
 
-:: 타겟별 GUID 및 백업 여부 설정
+call set "GUID=%%GUID_%TARGET%%%"
+
+echo 선택된 부팅 대상: %TARGET% [%GUID%]
+
+:: DRM 대상 문서 백업 (kt 선택 시)
 if /i "%TARGET%"=="kt" (
-    set "GUID={bb0223c0-5d5d-11f0-afe1-806e6f6e6963}"
 	echo "DRM 대상 문서 백업중..."
-	robocopy C:\home C:\doc\home\bak *.doc? *.xls? *.ppt? *.pdf *.rtf *.csv /S /XO /R:1 /W:1 /XD doc $RECYCLE.BIN /NJH /NJS /NDL /NP
+	:: robocopy C:\home C:\doc\home\bak *.doc? *.xls? *.ppt? *.pdf *.rtf *.csv /S /XO /R:1 /W:1 /XD doc $RECYCLE.BIN /NJH /NJS /NDL /NP
+    :: 7za x -tzip -aoa -y -bso1 -bsp1 -bse1 "%TARGET_ZIP%" -o"%RESTORE_DIR%"
+    if exist "C:\home\drmbak.zip" del /f /q "C:\home\drmbak.zip"
+    C:\home\local\7z\7za.exe a -tzip -r -y -bso1 -bsp0 -bse1 -x!doc -x!$RECYCLE.BIN "C:\home\drmbak.zip" -ir!"C:\home\*.doc?" -ir!"C:\home\*.xls?" -ir!"C:\home\*.ppt?" -ir!"C:\home\*.pdf" -ir!"C:\home\*.rtf" -ir!"C:\home\*.csv"
 )
-if /i "%TARGET%"=="rnb" set "GUID={bb0223c1-5d5d-11f0-afe1-806e6f6e6963}"
 
 :: BCD 설정 및 시스템 종료/재부팅 분기
 if /i "%MODE%"=="/o" (
