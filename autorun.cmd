@@ -41,8 +41,4 @@ doskey pyvenv=C:\home\dev\pyenv\venv.bat
 IF NOT EXIST c:\windows\system32\sudo.exe doskey sudo=c:\usr\bin\gsudo.exe $*
 IF EXIST C:\home\android\platform-tools\adb.exe doskey adb=C:\home\android\platform-tools\adb.exe $*
 
-:: doskey ktboot  = cmd /c "gsudo bcdedit.exe /set {fwbootmgr} default {bb0223c0-5d5d-11f0-afe1-806e6f6e6963} && IF /i "$1" == "/r" (shutdown /r /t 0) ELSE IF /i "$1" == "/p" (shutdown /p /t 0)"
-:: doskey rnbboot = cmd /c "gsudo bcdedit.exe /set {fwbootmgr} default {bb0223c1-5d5d-11f0-afe1-806e6f6e6963} && IF /i "$1" == "/r" (shutdown /r /t 0) ELSE IF /i "$1" == "/p" (shutdown /p /t 0)"
-
-doskey ktboot=cmd /c "IF /i \"$1\"==\"/o\" (gsudo bcdedit.exe /bootsequence {bb0223c0-5d5d-11f0-afe1-806e6f6e6963} && shutdown /r /t 0) ELSE (gsudo bcdedit.exe /set {fwbootmgr} default {bb0223c0-5d5d-11f0-afe1-806e6f6e6963} && IF /i \"$1\"==\"/r\" (shutdown /r /t 0) ELSE IF /i \"$1\"==\"/p\" (shutdown /s /t 0))"
-doskey rnbboot=cmd /c "IF /i \"$1\"==\"/o\" (gsudo bcdedit.exe /bootsequence {bb0223c1-5d5d-11f0-afe1-806e6f6e6963} && shutdown /r /t 0) ELSE (gsudo bcdedit.exe /set {fwbootmgr} default {bb0223c1-5d5d-11f0-afe1-806e6f6e6963} && IF /i \"$1\"==\"/r\" (shutdown /r /t 0) ELSE IF /i \"$1\"==\"/p\" (shutdown /s /t 0))"
+doskey rboot=C:\home\proj\win_batch\rboot.bat $*
