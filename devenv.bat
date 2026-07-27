@@ -34,9 +34,9 @@ set SYS_PATH=%SYS_PATH%;%%JAVA_HOME%%\bin
 :: Maven : M2_HOME 호환설정
 :: -------------------------------------------
 setx /M MAVEN_HOME %DEVHOME%\apache-maven-3.9.16
-setx /M M2_HOME %MAVEN_HOME%
+setx /M M2_HOME %%MAVEN_HOME%%
 setx /M MAVEN_OPTS -Dmaven.repo.local=%DEVHOME%\.data\maven
-set SYS_PATH=%SYS_PATH%;%%M2_HOME%%\bin
+set SYS_PATH=%SYS_PATH%;%%MAVEN_HOME%%\bin
 
 :: -------------------------------------------
 :: Gradle
@@ -68,10 +68,9 @@ set SYS_PATH=%SYS_PATH%;%DEVHOME%\git\bin
 :: -------------------------------------------
 :: git clone https://github.com/pyenv-win/pyenv-win.git %DEVHOME%\pyenv
 setx /M PYENV_ROOT %DEVHOME%\pyenv\pyenv-win
-setx /M PYENV %DEVHOME%\pyenv\pyenv-win
-:: set PATH=%PYENV%\bin;%PYENV%\shims;%PATH%
-set SYS_PATH=%SYS_PATH%;%%PYENV%%\bin
-set SYS_PATH=%SYS_PATH%;%%PYENV%%\shims
+setx /M PYENV %%PYENV_ROOT%%
+set SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\bin
+set SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\shims
 
 :: -------------------------------------------
 :: SVN
