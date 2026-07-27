@@ -1,8 +1,7 @@
 @echo off
 
 setlocal
-
-SET DEVHOME=C:\home\dev
+set DEVHOME=C:\home\dev
 
 :: Check if running as administrator
 Reg.exe query "HKU\S-1-5-19\Environment"
@@ -29,15 +28,15 @@ setx /M WEBIDE_PROPERTIES   %DEVHOME%\.config\WebStorm.properties
 :: -------------------------------------------
 
 setx /M JAVA_HOME %DEVHOME%\Java\jdk-21.0.11+10
-SET SYS_PATH=%SYS_PATH%;%%JAVA_HOME%%\bin
+set SYS_PATH=%SYS_PATH%;%%JAVA_HOME%%\bin
 
 :: -------------------------------------------
 :: Maven : M2_HOME 호환설정
 :: -------------------------------------------
 setx /M MAVEN_HOME %DEVHOME%\apache-maven-3.9.16
-setx /M M2_HOME %%MAVEN_HOME%%
+setx /M M2_HOME %MAVEN_HOME%
 setx /M MAVEN_OPTS -Dmaven.repo.local=%DEVHOME%\.data\maven
-SET SYS_PATH=%SYS_PATH%;%%MAVEN_HOME%%\bin
+set SYS_PATH=%SYS_PATH%;%%M2_HOME%%\bin
 
 :: -------------------------------------------
 :: Gradle
@@ -46,37 +45,38 @@ SET SYS_PATH=%SYS_PATH%;%%MAVEN_HOME%%\bin
 setx /M GRADLE_HOME %DEVHOME%\gradle-9.6.1
 setx /M GRADLE_USER_HOME %DEVHOME%\.data\gradle
 
-SET SYS_PATH=%SYS_PATH%;%%GRADLE_HOME%%\bin
+set SYS_PATH=%SYS_PATH%;%%GRADLE_HOME%%\bin
 
 :: -------------------------------------------
 :: Node
 :: -------------------------------------------
 
 setx /M NVM_HOME %DEVHOME%\nvm
-setx /M NPM_CONFIG_USERCONFIG %%NVM_HOME%%\.npmrc
-SET SYS_PATH=%SYS_PATH%;%%NVM_HOME%%
-SET SYS_PATH=%SYS_PATH%;node_modules\.bin
-SET SYS_PATH=%SYS_PATH%;%%NVM_HOME%%\nodejs
+setx /M NPM_CONFIG_USERCONFIG %DEVHOME%\nvm\.npmrc
+set SYS_PATH=%SYS_PATH%;%%NVM_HOME%%
+set SYS_PATH=%SYS_PATH%;node_modules\.bin
+set SYS_PATH=%SYS_PATH%;%%NVM_HOME%%\nodejs
 
 :: -------------------------------------------
 :: Git
 :: -------------------------------------------
 setx /M GIT_CONFIG_GLOBAL %DEVHOME%\.config\git\.gitconfig
-SET SYS_PATH=%SYS_PATH%;%DEVHOME%\git\bin
+set SYS_PATH=%SYS_PATH%;%DEVHOME%\git\bin
 
 :: -------------------------------------------
 :: Python : PYENV 호환설정
 :: -------------------------------------------
 :: git clone https://github.com/pyenv-win/pyenv-win.git %DEVHOME%\pyenv
 setx /M PYENV_ROOT %DEVHOME%\pyenv\pyenv-win
-setx /M PYENV %%PYENV_ROOT%%
-SET SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\bin
-SET SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\shims
+setx /M PYENV %DEVHOME%\pyenv\pyenv-win
+:: set PATH=%PYENV%\bin;%PYENV%\shims;%PATH%
+set SYS_PATH=%SYS_PATH%;%%PYENV%%\bin
+set SYS_PATH=%SYS_PATH%;%%PYENV%%\shims
 
 :: -------------------------------------------
 :: SVN
 :: -------------------------------------------
-SET SYS_PATH=%SYS_PATH%;%DEVHOME%\svn\bin
+set SYS_PATH=%SYS_PATH%;%DEVHOME%\svn\bin
 
 
 :: -------------------------------------------
@@ -85,14 +85,13 @@ SET SYS_PATH=%SYS_PATH%;%DEVHOME%\svn\bin
 :: Invoke-WebRequest -Uri "https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe"  -OutFile "$env:TEMP\Miniconda3-latest-Windows-x86_64.exe"
 :: "$env:TEMP\Miniconda3-latest-Windows-x86_64.exe" /InstallationType=JustMe /AddToPath=0 /S /RegisterPython=0 /NoRegistry=1 /NoScripts=1 /NoShortcuts=1 /D=%DEVHOME%\miniconda
 
-:: SET SYS_PATH=%SYS_PATH%;%DEVHOME%\miniconda\condabin
-:: SET SYS_PATH=%SYS_PATH%;%DEVHOME%\miniconda\Scripts
+:: set SYS_PATH=%SYS_PATH%;%DEVHOME%\miniconda\condabin
+:: set SYS_PATH=%SYS_PATH%;%DEVHOME%\miniconda\Scripts
 
 :: conda config --system --append envs_dirs %DEVHOME%\.data\miniconda
 :: conda create -n venv python=3.13.3
 
 :: --------- Global Path --------
-:: Path 중복 제거 후 설정
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
     "$path = $env:SYS_PATH;" ^
     "if (-not $path -or $path.Trim() -eq '') {" ^
@@ -107,7 +106,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
 :: Secure environment variables
 :: -------------------------------------------
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-    "$dir = 'secure';" ^
+    "$dir = Join-Path '%~dp0' 'secure';" ^
     "if (-not (Test-Path $dir)) { Write-Error "'$dir' 디렉토리를 찾을 수 없습니다."; exit 1 };" ^
     "Get-ChildItem -Path $dir -File | ForEach-Object {" ^
     "    $name = $_.Name;" ^

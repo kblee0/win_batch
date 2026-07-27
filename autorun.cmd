@@ -20,6 +20,7 @@ doskey setpub=gsudo powershell -NoProfile -ExecutionPolicy Bypass -File C:\home\
 doskey vmount=gsudo powershell -NoProfile -ExecutionPolicy Bypass -File c:\home\proj\win_batch\VHD-Mount.ps1 $*
 doskey vcreate=gsudo powershell -NoProfile -ExecutionPolicy Bypass -File c:\home\proj\win_batch\VHD-Create.ps1 $*
 doskey vresize=gsudo powershell -NoProfile -ExecutionPolicy Bypass -File c:\home\proj\win_batch\VHD-Resize.ps1 $*
+doskey pyvenv=C:\home\dev\pyenv\venv.bat
 
 doskey mv = move $*
 doskey ps = tasklist $*
