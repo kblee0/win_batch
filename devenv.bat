@@ -68,6 +68,7 @@ set SYS_PATH=%SYS_PATH%;%DEVHOME%\git\bin
 :: git clone https://github.com/pyenv-win/pyenv-win.git %DEVHOME%\pyenv
 setx /M PYENV_ROOT %DEVHOME%\pyenv\pyenv-win
 setx /M PYENV %%PYENV_ROOT%%
+setx /M PIP_CONFIG_FILE %DEVHOME%\.config\pip\pip.ini
 
 set SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\bin
 set SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\shims
