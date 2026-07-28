@@ -11,7 +11,9 @@ if %errorlevel% neq 0 (
 cls
 
 :: Get system path
-for /f "tokens=2,*" %%A in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v Path 2^>nul ^| findstr /i /c:"REG_EXPAND_SZ" /c:"REG_SZ"') do SET "SYS_PATH=%%B"
+for /f "usebackq delims=" %%A in (`powershell -NoProfile -Command ^
+    "$regkey = Get-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment'; " ^
+    "$regkey.GetValue('Path', $null, 'DoNotExpandEnvironmentNames')"`) do SET "SYS_PATH=%%A"
 
 :: -------------------------------------------
 :: Jetbrain
@@ -113,7 +115,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
     "    $name = $_.Name;" ^
     "    $val = (Get-Content -Path $_.FullName -Raw).Trim();" ^
     "    if ($val) {" ^
-    "        [Environment]::SetEnvironmentVariable($name, $val, 'User');" ^
+    "        Set-ItemProperty -Path 'HKCU:\Environment' -Name $name -Value $val -Type ExpandString;" ^
     "        Write-Output \"[U] $name=$val\";" ^
     "    }" ^
     "}"
