@@ -1,5 +1,5 @@
 @echo off
-if "%1" == "-i" Reg.exe add "HKCU\SOFTWARE\Microsoft\Command Processor" /v "AutoRun" /t REG_SZ /d %~dpnx0 /f
+if "%~1" == "-i" Reg.exe add "HKCU\SOFTWARE\Microsoft\Command Processor" /v "AutoRun" /t REG_SZ /d %~dpnx0 /f
 
 SET PATH=%PATH%;C:\home\bin;C:\home\local\bin;C:\home\proj\win_batch
 
@@ -40,5 +40,3 @@ doskey pyvenv=C:\home\dev\pyenv\venv.bat
 
 IF NOT EXIST c:\windows\system32\sudo.exe doskey sudo=c:\usr\bin\gsudo.exe $*
 IF EXIST C:\home\android\platform-tools\adb.exe doskey adb=C:\home\android\platform-tools\adb.exe $*
-
-doskey boot=C:\home\proj\win_batch\boot.bat $*
