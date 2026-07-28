@@ -41,4 +41,4 @@ doskey pyvenv=C:\home\dev\pyenv\venv.bat
 IF NOT EXIST c:\windows\system32\sudo.exe doskey sudo=c:\usr\bin\gsudo.exe $*
 IF EXIST C:\home\android\platform-tools\adb.exe doskey adb=C:\home\android\platform-tools\adb.exe $*
 
-doskey rboot=C:\home\proj\win_batch\rboot.bat $*
+doskey boot=C:\home\proj\win_batch\boot.bat $*
