@@ -11,7 +11,7 @@ if %errorlevel% neq 0 (
 cls
 
 :: Get system path
-for /f "delims=" %%A in ('powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('Path', 'Machine')"') do SET SYS_PATH=%%A
+for /f "tokens=2,*" %%A in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v Path 2^>nul ^| findstr /i /c:"REG_EXPAND_SZ" /c:"REG_SZ"') do SET "SYS_PATH=%%B"
 
 :: -------------------------------------------
 :: Jetbrain
@@ -98,7 +98,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
     "    exit 1;" ^
     "};" ^
     "$uniquePath = ($path -split ';' | Where-Object { $_.Trim() -ne '' } | Select-Object -Unique) -join ';';" ^
-    "[Environment]::SetEnvironmentVariable('PATH', $uniquePath, 'Machine');" ^
+    "$regPath = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment';" ^
+    "Set-ItemProperty -Path $regPath -Name 'Path' -Value $uniquePath -Type ExpandString;" ^
     "Write-Output ('[M] PATH=' + $uniquePath);"
 
 :: -------------------------------------------
