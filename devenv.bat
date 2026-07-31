@@ -75,6 +75,13 @@ setx /M PIP_CONFIG_FILE %DEVHOME%\.config\pip\pip.ini
 set SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\bin
 set SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\shims
 
+:: setx /M UV_INSTALL_DIR %DEVHOME%\uv\bin
+:: setx /M UV_PYTHON_INSTALL_DIR %DEVHOME%\uv\python
+:: setx /M UV_PYTHON_BIN_DIR %%UV_INSTALL_DIR%%
+:: setx /M UV_CACHE_DIR %DEVHOME%\.data\uv\cache
+
+:: set SYS_PATH=%SYS_PATH%;%%UV_INSTALL_DIR%%
+
 :: -------------------------------------------
 :: SVN
 :: -------------------------------------------
@@ -119,6 +126,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
     "        Write-Output \"[U] $name=$val\";" ^
     "    }" ^
     "}"
+
+:: Microsoft Defender 제외 처리
+powershell -NoProfile -Command "Add-MpPreference -ExclusionPath 'C:\home\proj','%LOCALAPPDATA%\JetBrains'"
 
 :: -------------------------------------------
 :: User setting
