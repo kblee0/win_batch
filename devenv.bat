@@ -68,19 +68,23 @@ set SYS_PATH=%SYS_PATH%;%DEVHOME%\git\bin
 :: Python : PYENV 호환설정
 :: -------------------------------------------
 :: git clone https://github.com/pyenv-win/pyenv-win.git %DEVHOME%\pyenv
-setx /M PYENV_ROOT %DEVHOME%\pyenv\pyenv-win
-setx /M PYENV %%PYENV_ROOT%%
-setx /M PIP_CONFIG_FILE %DEVHOME%\.config\pip\pip.ini
+:: setx /M PYENV_ROOT %DEVHOME%\pyenv\pyenv-win
+:: setx /M PYENV %%PYENV_ROOT%%
+:: setx /M PIP_CONFIG_FILE %DEVHOME%\.config\pip\pip.ini
 
-set SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\bin
-set SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\shims
+:: set SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\bin
+:: set SYS_PATH=%SYS_PATH%;%%PYENV_ROOT%%\shims
 
-:: setx /M UV_INSTALL_DIR %DEVHOME%\uv\bin
-:: setx /M UV_PYTHON_INSTALL_DIR %DEVHOME%\uv\python
-:: setx /M UV_PYTHON_BIN_DIR %%UV_INSTALL_DIR%%
-:: setx /M UV_CACHE_DIR %DEVHOME%\.data\uv\cache
+:: set UV_INSTALL_DIR=%DEVHOME%\uv
+:: powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
-:: set SYS_PATH=%SYS_PATH%;%%UV_INSTALL_DIR%%
+setx /M UV_INSTALL_DIR        %DEVHOME%\uv
+setx /M UV_PYTHON_BIN_DIR     %%UV_INSTALL_DIR%%
+setx /M UV_CONFIG_FILE        %%UV_INSTALL_DIR%%\uv.toml
+setx /M UV_PYTHON_INSTALL_DIR %DEVHOME%\.data\uv\python
+setx /M UV_CACHE_DIR          %DEVHOME%\.data\uv\cache
+
+set SYS_PATH=%SYS_PATH%;%%UV_INSTALL_DIR%%
 
 :: -------------------------------------------
 :: SVN
