@@ -1,0 +1,13 @@
+<Configuration>
+    <MappedFolders>
+        <MappedFolder>
+            <HostFolder>C:\home</HostFolder>
+            <SandboxFolder>C:\home</SandboxFolder>
+            <ReadOnly>true</ReadOnly>
+        </MappedFolder>
+    </MappedFolders>
+
+    <LogonCommand>
+        <Command>cmd.exe /c C:\home\proj\win_batch\sandbox.cmd</Command>
+    </LogonCommand>
+</Configuration>
