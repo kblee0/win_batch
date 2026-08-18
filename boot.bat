@@ -60,9 +60,9 @@ if /i "%MODE%"=="/o" (
     if errorlevel 1 goto error_exit
 
     if /i "%MODE%"=="/r" (
-        echo shutdown /r /t 0
+        shutdown /r /t 0
     ) else if /i "%MODE%"=="/p" (
-        echo shutdown /s /t 0
+        shutdown /s /t 0
     )
 )
 
