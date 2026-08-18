@@ -37,12 +37,13 @@ if "%TARGET%"=="" (
 call set "GUID=%%GUID_%TARGET%%%"
 
 echo 선택된 부팅 대상: %TARGET% [%GUID%]
+echo.
 
-:: DRM 대상 문서 백업 (kt 선택 시)
+:: DRM 대상 문서 백업 : kt 선택 시
 if /i "%TARGET%"=="kt" (
-	echo "DRM 대상 문서 백업중..."
-	:: robocopy C:\home C:\doc\home\bak *.doc? *.xls? *.ppt? *.pdf *.rtf *.csv /S /XO /R:1 /W:1 /XD doc $RECYCLE.BIN /NJH /NJS /NDL /NP
-    :: 7za x -tzip -aoa -y -bso1 -bsp1 -bse1 "%TARGET_ZIP%" -o"%RESTORE_DIR%"
+	echo DRM 대상 문서 백업중...
+	REM robocopy C:\home C:\doc\home\bak *.doc? *.xls? *.ppt? *.pdf *.rtf *.csv /S /XO /R:1 /W:1 /XD doc $RECYCLE.BIN /NJH /NJS /NDL /NP
+    REM 7za x -tzip -aoa -y -bso1 -bsp1 -bse1 "%TARGET_ZIP%" -o"%RESTORE_DIR%"
     if exist "C:\home\drmbak.zip" del /f /q "C:\home\drmbak.zip"
     C:\home\local\7z\7za.exe a -tzip -r -y -bso1 -bsp0 -bse1 -x!doc -x!$RECYCLE.BIN "C:\home\drmbak.zip" -ir!"C:\home\*.doc?" -ir!"C:\home\*.xls?" -ir!"C:\home\*.ppt?" -ir!"C:\home\*.pdf" -ir!"C:\home\*.rtf" -ir!"C:\home\*.csv"
 )
@@ -59,9 +60,9 @@ if /i "%MODE%"=="/o" (
     if errorlevel 1 goto error_exit
 
     if /i "%MODE%"=="/r" (
-        shutdown /r /t 0
+        echo shutdown /r /t 0
     ) else if /i "%MODE%"=="/p" (
-        shutdown /s /t 0
+        echo shutdown /s /t 0
     )
 )
 
