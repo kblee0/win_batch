@@ -7,7 +7,7 @@ for %%i in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) DO IF "!HOME!" == "
 net session >nul 2>&1
 if %errorlevel% neq 0 (
 	if exist %HOME%\bin\gsudo.exe (
-		%HOME%\bin\gsudo.exe %~f0
+		%HOME%\bin\gsudo.exe %~df0 %*
 	) else (
 		Echo You must have administrator rights to continue ...
 	)

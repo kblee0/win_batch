@@ -1,6 +1,18 @@
 @echo off
 setlocal
 
+:run_admin
+set SUDO=c:\home\bin\gsudo.exe
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+	if exist %SUDO% (
+		%SUDO% %~df0 %*
+	) else (
+		Echo You must have administrator rights to continue ...
+	)
+	Exit /B																									
+)
+
 set "GUID_kt={bb0223c0-5d5d-11f0-afe1-806e6f6e6963}"
 set "GUID_rnb={bb0223c1-5d5d-11f0-afe1-806e6f6e6963}"
 
