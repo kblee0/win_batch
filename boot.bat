@@ -13,14 +13,14 @@ if %errorlevel% neq 0 (
 	Exit /B																									
 )
 
-set "GUID_kt={bb0223c0-5d5d-11f0-afe1-806e6f6e6963}"
+set "GUID_work={bb0223c0-5d5d-11f0-afe1-806e6f6e6963}"
 set "GUID_rnb={bb0223c1-5d5d-11f0-afe1-806e6f6e6963}"
 
-:: ÃÊ±â º¯¼ö ¼³Á¤
+:: ì´ˆê¸° ë³€ìˆ˜ ì„¤ì •
 set "MODE="
 set "TARGET="
 
-:: ¸Å°³º¯¼ö ÆÄ½Ì (ÃÖ´ë 2°³ ¸Å°³º¯¼ö °Ë»ç)
+:: ë§¤ê°œë³€ìˆ˜ íŒŒì‹± (ìµœëŒ€ 2ê°œ ë§¤ê°œë³€ìˆ˜ ê²€ì‚¬)
 
 :parse_args
 
@@ -30,44 +30,44 @@ if /i "%~1"=="/r" set "MODE=/r" & shift & goto parse_args
 if /i "%~1"=="/p" set "MODE=/p" & shift & goto parse_args
 if /i "%~1"=="/o" set "MODE=/o" & shift & goto parse_args
 
-if /i "%~1"=="kt"  set "TARGET=kt"  & shift & goto parse_args
+if /i "%~1"=="work"  set "TARGET=work"  & shift & goto parse_args
 if /i "%~1"=="rnb" set "TARGET=rnb" & shift & goto parse_args
 
-:: À¯È¿ÇÏÁö ¾ÊÀº ÀÎÀÚ Ã³¸®
+:: ìœ íš¨í•˜ì§€ ì•Šì€ ì¸ì ì²˜ë¦¬
 
-echo [¿À·ù] ¾Ë ¼ö ¾ø´Â ¸Å°³º¯¼öÀÔ´Ï´Ù: %~1
+echo [ì˜¤ë¥˜] ì•Œ ìˆ˜ ì—†ëŠ” ë§¤ê°œë³€ìˆ˜ì…ë‹ˆë‹¤: %~1
 goto usage
 
 :validate
 
-:: Å¸°Ù ÇÊ¼ö Ã¼Å©
+:: íƒ€ê²Ÿ í•„ìˆ˜ ì²´í¬
 if "%TARGET%"=="" (
-    echo [¿À·ù] ºÎÆÃ ´ë»ó^(kt ¶Ç´Â rnb^)À» ÁöÁ¤ÇØ¾ß ÇÕ´Ï´Ù.
+    echo [ì˜¤ë¥˜] ë¶€íŒ… ëŒ€ìƒ^(work ë˜ëŠ” rnb^)ì„ ì§€ì •í•´ì•¼ í•©ë‹ˆë‹¤.
     goto usage
 )
 
 call set "GUID=%%GUID_%TARGET%%%"
 
-echo ¼±ÅÃµÈ ºÎÆÃ ´ë»ó: %TARGET% [%GUID%]
+echo ì„ íƒëœ ë¶€íŒ… ëŒ€ìƒ: %TARGET% [%GUID%]
 echo.
 
-:: DRM ´ë»ó ¹®¼­ ¹é¾÷ : kt ¼±ÅÃ ½Ã
-if /i "%TARGET%"=="kt" (
-	echo DRM ´ë»ó ¹®¼­ ¹é¾÷Áß...
+:: DRM ëŒ€ìƒ ë¬¸ì„œ ë°±ì—… : work ì„ íƒ ì‹œ
+if /i "%TARGET%"=="work" (
+	echo DRM ëŒ€ìƒ ë¬¸ì„œ ë°±ì—…ì¤‘...
 	REM robocopy C:\home C:\doc\home\bak *.doc? *.xls? *.ppt? *.pdf *.rtf *.csv /S /XO /R:1 /W:1 /XD doc $RECYCLE.BIN /NJH /NJS /NDL /NP
     REM 7za x -tzip -aoa -y -bso1 -bsp1 -bse1 "%TARGET_ZIP%" -o"%RESTORE_DIR%"
     if exist "C:\home\drmbak.zip" del /f /q "C:\home\drmbak.zip"
     C:\home\local\7z\7za.exe a -tzip -r -y -bso1 -bsp0 -bse1 -x!doc -x!$RECYCLE.BIN "C:\home\drmbak.zip" -ir!"C:\home\*.doc?" -ir!"C:\home\*.xls?" -ir!"C:\home\*.ppt?" -ir!"C:\home\*.pdf" -ir!"C:\home\*.rtf" -ir!"C:\home\*.csv"
 )
 
-:: BCD ¼³Á¤ ¹× ½Ã½ºÅÛ Á¾·á/ÀçºÎÆÃ ºĞ±â
+:: BCD ì„¤ì • ë° ì‹œìŠ¤í…œ ì¢…ë£Œ/ì¬ë¶€íŒ… ë¶„ê¸°
 if /i "%MODE%"=="/o" (
-    echo 1È¸¼º ÀçºÎÆÃ ¼³Á¤ Áß... [%TARGET%]
+    echo 1íšŒì„± ì¬ë¶€íŒ… ì„¤ì • ì¤‘... [%TARGET%]
     gsudo bcdedit.exe /bootsequence %GUID%
     if errorlevel 1 goto error_exit
     shutdown /r /t 0
 ) else (
-    echo ±âº» ºÎÆÃ Ç×¸ñ º¯°æ Áß... [%TARGET%]
+    echo ê¸°ë³¸ ë¶€íŒ… í•­ëª© ë³€ê²½ ì¤‘... [%TARGET%]
     gsudo bcdedit.exe /set {fwbootmgr} default %GUID%
     if errorlevel 1 goto error_exit
 
@@ -82,14 +82,14 @@ goto :eof
 
 :usage
 echo.
-echo »ç¿ë¹ı: rboot.bat [/r ^| /p ^| /o] [kt ^| rnb]
-echo   /r : ¼³Á¤ ÈÄ Áï½Ã ÀçºÎÆÃ
-echo   /p : ¼³Á¤ ÈÄ Áï½Ã Àü¿ø Á¾·á
-echo   /o : 1È¸¼º(Next Boot) ÀçºÎÆÃ ¼³Á¤ ÈÄ Áï½Ã ÀçºÎÆÃ
-echo   (¿É¼Ç ¹ÌÀÔ·Â ½Ã BCD ±âº»°ª¸¸ º¯°æÇÏ°í Á¾·áÇÏÁö ¾ÊÀ½)
+echo ì‚¬ìš©ë²•: rboot.bat [/r ^| /p ^| /o] [work ^| rnb]
+echo   /r : ì„¤ì • í›„ ì¦‰ì‹œ ì¬ë¶€íŒ…
+echo   /p : ì„¤ì • í›„ ì¦‰ì‹œ ì „ì› ì¢…ë£Œ
+echo   /o : 1íšŒì„±(Next Boot) ì¬ë¶€íŒ… ì„¤ì • í›„ ì¦‰ì‹œ ì¬ë¶€íŒ…
+echo   (ì˜µì…˜ ë¯¸ì…ë ¥ ì‹œ BCD ê¸°ë³¸ê°’ë§Œ ë³€ê²½í•˜ê³  ì¢…ë£Œí•˜ì§€ ì•ŠìŒ)
 echo.
 exit /b 1
 
 :error_exit
-echo [¿À·ù] BCD ¼öÁ¤¿¡ ½ÇÆĞÇß½À´Ï´Ù. (gsudo ±ÇÇÑ È®ÀÎ ÇÊ¿ä)
+echo [ì˜¤ë¥˜] BCD ìˆ˜ì •ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤. (gsudo ê¶Œí•œ í™•ì¸ í•„ìš”)
 exit /b 1
