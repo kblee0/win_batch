@@ -383,15 +383,13 @@ goto:eof
 :: ProPlus2024Retail   VWCNX-7FKBD-FHJYG-XBR4B-88KC6
 set /p "choice=Office 종류 (1: O365BusinessRetail, 2: Standard2024Volume, 3: ProPlus2024Retail) ? "
 
+set "PIDKEY="
 :: 입력값에 따른 PIDKEY 설정
-if "%choice%"=="1" (
-    set "PIDKEY=Y9NF9-M2QWD-FF6RJ-QJW36-RRF2T"
-) else if "%choice%"=="2" (
-    set "PIDKEY=GVG6N-6WCHH-K2MVP-RQ78V-3J7GJ"
-) else if "%choice%"=="3" (
-    set "PIDKEY=VWCNX-7FKBD-FHJYG-XBR4B-88KC6"
-) else (
-    echo [오류] 올바른 번호(1, 2, 3)를 입력해 주세요.
+if "%choice%"=="1" set "PIDKEY=Y9NF9-M2QWD-FF6RJ-QJW36-RRF2T"
+if "%choice%"=="2" set "PIDKEY=GVG6N-6WCHH-K2MVP-RQ78V-3J7GJ"
+if "%choice%"=="3" set "PIDKEY=VWCNX-7FKBD-FHJYG-XBR4B-88KC6"
+if "%PIDKEY%"=="" (
+    echo [오류] 올바른 번호를 입력해 주세요.
     pause
     goto:eof
 )
