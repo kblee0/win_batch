@@ -399,7 +399,8 @@ powershell -Command "$p=[Environment]::ExpandEnvironmentVariables('%ProgramFiles
 
 reg add HKCU\Software\Microsoft\Office\16.0\Common\Licensing\Resiliency /v "TimeOfLastHeartbeatFailure" /t REG_SZ /d "2040-01-01T00:00:00Z" /f
 
-cscript "%ProgramFiles%\Microsoft Office\root\Office16\OSPP.VBS" /inpkey:%PIDKEY%
+if exist "%ProgramFiles%\Microsoft Office\root\Office16\OSPP.VBS" cscript "%ProgramFiles%\Microsoft Office\root\Office16\OSPP.VBS" /inpkey:%PIDKEY%
+if exist "%ProgramFiles%\Microsoft Office\Office16\OSPP.VBS" cscript "%ProgramFiles%\Microsoft Office\Office16\OSPP.VBS" /inpkey:%PIDKEY%
 
 pause
 
