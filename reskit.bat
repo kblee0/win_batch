@@ -399,9 +399,15 @@ powershell -Command "$p=[Environment]::ExpandEnvironmentVariables('%ProgramFiles
 
 reg add HKCU\Software\Microsoft\Office\16.0\Common\Licensing\Resiliency /v "TimeOfLastHeartbeatFailure" /t REG_SZ /d "2040-01-01T00:00:00Z" /f
 
-if exist "%ProgramFiles%\Microsoft Office\root\Office16\OSPP.VBS" cscript "%ProgramFiles%\Microsoft Office\root\Office16\OSPP.VBS" /inpkey:%PIDKEY%
-if exist "%ProgramFiles%\Microsoft Office\Office16\OSPP.VBS" cscript "%ProgramFiles%\Microsoft Office\Office16\OSPP.VBS" /inpkey:%PIDKEY%
-
+CHOICE /C yn /M "PIDKEY를 변경하시겠습니까? "
+if %errorlevel% equ 1 (
+    if exist "%ProgramFiles%\Microsoft Office\root\Office16\OSPP.VBS" echo cscript "%ProgramFiles%\Microsoft Office\root\Office16\OSPP.VBS" /inpkey:%PIDKEY%
+    if exist "%ProgramFiles%\Microsoft Office\Office16\OSPP.VBS" echo cscript "%ProgramFiles%\Microsoft Office\Office16\OSPP.VBS" /inpkey:%PIDKEY%
+) else (
+    echo.
+    echo PIDKEY를 %PIDKEY% 로 변경하세요.
+    echo.
+)
 pause
 
 goto:eof
