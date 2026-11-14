@@ -378,20 +378,45 @@ pause
 goto:eof
 
 :mainmenu_23
-:: O365BusinessRetail  Y9NF9-M2QWD-FF6RJ-QJW36-RRF2T
-:: Standard2024Volume  GVG6N-6WCHH-K2MVP-RQ78V-3J7GJ
-:: ProPlus2024Retail   VWCNX-7FKBD-FHJYG-XBR4B-88KC6
-set /p "choice=Office 종류 (1: O365BusinessRetail, 2: Standard2024Volume, 3: ProPlus2024Retail) ? "
+set PIDKEY=
+set PIDKEY1=3HYJN-9KG99-F8VG9-V3DT8-JFMHV
+set PIDKEY2=Y9NF9-M2QWD-FF6RJ-QJW36-RRF2T
+set PIDKEY3=W62NQ-267QR-RTF74-PF2MH-JQMTH
+set PIDKEY4=3NMDC-G7C3W-68RGP-CB4MH-4CXCH
+set PIDKEY5=H8DN8-Y2YP3-CR9JT-DHDR9-C7GP3
+set PIDKEY6=2QCNB-RMDKJ-GC8PB-7QGQV-7QTQJ
+set PIDKEY7=F2VNW-MW8TT-K622Q-4D96H-PWJ8X
+set PIDKEY8=GVG6N-6WCHH-K2MVP-RQ78V-3J7GJ
+set PIDKEY9=WNFMR-HK4R7-7FJVM-VQ3JC-76HF6
+set PIDKEY10=GBNHB-B2G3Q-G42YB-3MFC2-7CJCX
+set PIDKEY99=XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
 
-set "PIDKEY="
-:: 입력값에 따른 PIDKEY 설정
-if "%choice%"=="1" set "PIDKEY=Y9NF9-M2QWD-FF6RJ-QJW36-RRF2T"
-if "%choice%"=="2" set "PIDKEY=GVG6N-6WCHH-K2MVP-RQ78V-3J7GJ"
-if "%choice%"=="3" set "PIDKEY=VWCNX-7FKBD-FHJYG-XBR4B-88KC6"
-if "%PIDKEY%"=="" (
-    echo [오류] 올바른 번호를 입력해 주세요.
+echo.
+echo * Office 365
+echo 1) O365AppsBasicRetail     %PIDKEY1%
+echo 2) O365BusinessRetail      %PIDKEY2%
+echo 3) O365EduCloudRetail      %PIDKEY3%
+echo 4) O365HomePremRetail      %PIDKEY4%
+echo 5) O365ProPlusRetail       %PIDKEY5%
+echo 6) O365SmallBusPremRetail  %PIDKEY6%
+echo.
+echo * Office 2024
+echo 7) ProjectStd2024Volume    %PIDKEY7%
+echo 8) Standard2024Volume      %PIDKEY8%
+echo --------------------------------------------------------
+echo 9) ProjectPro2024Volume    %PIDKEY9%
+echo 10) VisioPro2024Volume     %PIDKEY10%
+echo.
+echo 99) 사용자 직접 변경
+echo.
+
+set /P "PIDKEYNUM=오피스 제품을 선택하세요? "
+call set PIDKEY=%%PIDKEY%PIDKEYNUM%%%
+
+IF "%PIDKEY%" == "" (
+    echo 오피스 제품이 선택 되지 않았습니다.
     pause
-    goto:eof
+    goto :eof
 )
 
 mklink "%ProgramFiles%\Microsoft Office\root\vfs\System\sppcs.dll" "%windir%\System32\sppc.dll"
@@ -399,8 +424,12 @@ powershell -Command "$p=[Environment]::ExpandEnvironmentVariables('%ProgramFiles
 
 reg add HKCU\Software\Microsoft\Office\16.0\Common\Licensing\Resiliency /v "TimeOfLastHeartbeatFailure" /t REG_SZ /d "2040-01-01T00:00:00Z" /f
 
-CHOICE /C yn /M "PIDKEY를 변경하시겠습니까? "
+if %PIDKEYNUM% eq 22 goto :eof
+
+ehco.
+CHOICE /C yn /M "PIDKEY를 %PIDKEY% 로 변경하시겠습니까? "
 if %errorlevel% equ 1 (
+    echo.
     if exist "%ProgramFiles%\Microsoft Office\root\Office16\OSPP.VBS" echo cscript "%ProgramFiles%\Microsoft Office\root\Office16\OSPP.VBS" /inpkey:%PIDKEY%
     if exist "%ProgramFiles%\Microsoft Office\Office16\OSPP.VBS" echo cscript "%ProgramFiles%\Microsoft Office\Office16\OSPP.VBS" /inpkey:%PIDKEY%
 ) else (
