@@ -52,7 +52,7 @@ goto :main
 
 :mainmenu_99
 shutdown /r /t 0
-goto:eof
+goto :eof
 
 :mainmenu_1
 echo 키보드 속도 빠르게 설정
@@ -61,7 +61,7 @@ Reg.exe add "HKCU\Control Panel\Keyboard" /v "KeyboardDelay" /t REG_SZ /d "0" /f
 Reg.exe add "HKCU\Control Panel\Keyboard" /v "KeyboardSpeed" /t REG_SZ /d "31" /f
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_2
 echo 한영전환 Shift-Space, 한글 동시지원
@@ -72,7 +72,7 @@ Reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\i8042prt\Parameters" /v "Ove
 Reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\Keyboard Layout" /v "Scancode Map" /t REG_BINARY /d "000000000000000003000000720038E071001DE000000000" /f
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_3
 echo 다운로드 Savezone 비활성화
@@ -82,28 +82,28 @@ Reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments
 Reg.exe add "HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Attachments" /v "SaveZoneInformation" /t REG_DWORD /d "1" /f
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_4
 echo 위젯 비활성화
 Reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Dsh" /v "AllowNewsAndInterests" /t REG_DWORD /d "0" /f
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_5
 echo CoPilot 비활성화
 Reg.exe add "HKCU\Software\Policies\Microsoft\Windows\WindowsCopilot" /v "TurnOffWindowsCopilot" /t REG_DWORD /d "1" /f
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_6
 echo 백그라운드앱 중지
 Reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" /v "LetAppsRuninBackgroud" /t REG_DWORD /d "2" /f
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_7
 echo Explorer 기본설정
@@ -160,7 +160,7 @@ taskkill /F /IM explorer.exe
 explorer.exe
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_8
 set /p hostname="HOSTNAME: "
@@ -170,13 +170,13 @@ powershell -c "Add-Computer -WorkGroupName %workgroup%"
 powershell -c "Rename-Computer -NewName %hostname%"
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_9
 DISM.exe /Online /Set-ReservedStorageState /State:Disabled
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_10
 
@@ -252,7 +252,7 @@ powershell -Command "Get-AppxPackage -AllUsers | Where-Object { $_.Name -in @( %
 :: schtasks /Change /TN "Microsoft\XblGameSave\XblGameSaveTaskLogon" /disable
 :: reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" /v AllowGameDVR /t REG_DWORD /d 0 /f
 pause
-goto:eof
+goto :eof
 
 :mainmenu_11
 set /p tmpdir="디렉토리: "
@@ -263,7 +263,7 @@ setx TEMP "%tmpdir%" /m
 setx TMP "%tmpdir%" /m
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_12
 :: IF EXIST C:\home\proj\win_batch\autorun.cmd Reg.exe add "HKCU\SOFTWARE\Microsoft\Command Processor" /v "AutoRun" /t REG_SZ /d "C:\home\proj\win_batch\autorun.cmd" /f
@@ -297,7 +297,7 @@ Reg.exe add "HKCU\Console\%%%%Startup" /v "DelegationConsole" /t REG_SZ /d "{2EA
 Reg.exe add "HKCU\Console\%%%%Startup" /v "DelegationTerminal" /t REG_SZ /d "{E12CFF52-A866-4C77-9A90-F570A7AA2C6B}" /f
 
 pause
-goto:eof
+goto :eof
 
 
 :mainmenu_13
@@ -305,7 +305,7 @@ start %SystemRoot%\TEMP
 start %USERPROFILE%\AppData\Local\Temp
 
 pause
-goto:eof
+goto :eof
 
 
 :mainmenu_14
@@ -313,7 +313,7 @@ echo PC시간을 UTC 로설정
 Reg.exe add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TimeZoneInformation" /v RealTimeIsUniversal /t REG_DWORD /d "1" /f
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_15
 set /p DRVDIR="디렉토리: "
@@ -321,7 +321,7 @@ IF NOT EXIST "%DRVDIR%" mkdir "%DRVDIR%"
 Dism.exe /Online /Export-Driver "/Destination:%DRVDIR%"
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_16
 set /p DRVDIR="디렉토리: "
@@ -329,7 +329,7 @@ pnputil.exe /add-driver "%DRVDIR%\*.inf" /subdirs /install
 start devmgmt.msc
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_17
 Reg.exe add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassTPMCheck" /t REG_DWORD /d "1" /f
@@ -339,33 +339,33 @@ Reg.exe add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassStorageCheck" /t REG_DWORD /
 Reg.exe add "HKLM\SYSTEM\Setup\LabConfig" /v "BypassCPUCheck" /t REG_DWORD /d "1" /f
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_18
 Reg.exe add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OOBE /v BypassNRO /t REG_DWORD /d 1 /f
 
 pause
-goto:eof
+goto :eof
 
 
 :mainmenu_19
 dism /online /Cleanup-Image /StartComponentCleanup /ResetBase
 
 pause
-goto:eof
+goto :eof
 
 :mainmenu_20
 
 %HOME%\bin\gsudo.exe --ti %HOME%\local\bin\regjump.exe HKLM\SYSTEM\CurrentControlSet\Services\BTHPORT\Parameters\Keys
 
-goto:eof
+goto :eof
 
 :mainmenu_21
 
 powershell -Command "Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-Management-PowerShell -All"
 :: DISM /Online /Add-Capability /CapabilityName:WMIC~~~~
 
-goto:eof
+goto :eof
 
 
 :mainmenu_22
@@ -375,7 +375,7 @@ cscript "%SystemRoot%\System32\slmgr.vbs" /dlv
 
 pause
 
-goto:eof
+goto :eof
 
 :mainmenu_23
 set PIDKEY=
@@ -439,4 +439,4 @@ if %errorlevel% equ 1 (
 )
 pause
 
-goto:eof
+goto :eof
