@@ -427,6 +427,7 @@ echo 99) 사용자 직접 변경
 echo.
 
 set /P "PIDKEYNUM=오피스 제품을 선택하세요? "
+if "%PIDKEYNUM%" geq "1" if "%PIDKEYNUM%" leq "9" set "PIDKEYNUM=0%PIDKEYNUM%"
 call set PIDKEY=%%PIDKEY%PIDKEYNUM%%%
 
 IF "%PIDKEY%" == "" (
@@ -540,19 +541,16 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 reg add HKCU\Software\Microsoft\Office\16.0\Common\Licensing\Resiliency /v "TimeOfLastHeartbeatFailure" /t REG_SZ /d "2040-01-01T00:00:00Z" /f
 
-if %PIDKEYNUM% eq 22 goto :eof
+if %PIDKEYNUM% equ 22 goto :eof
 
-ehco.
+echo.
 CHOICE /C yn /M "PIDKEY를 %PIDKEY% 로 변경하시겠습니까? "
 if %errorlevel% equ 1 (
     echo.
     if exist "%ProgramFiles%\Microsoft Office\root\Office16\OSPP.VBS" echo cscript "%ProgramFiles%\Microsoft Office\root\Office16\OSPP.VBS" /inpkey:%PIDKEY%
     if exist "%ProgramFiles%\Microsoft Office\Office16\OSPP.VBS" echo cscript "%ProgramFiles%\Microsoft Office\Office16\OSPP.VBS" /inpkey:%PIDKEY%
-) else (
-    echo.
-    echo PIDKEY를 %PIDKEY% 로 변경하세요.
-    echo.
 )
+
 pause
 
 goto :eof
