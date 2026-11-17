@@ -299,14 +299,12 @@ Reg.exe add "HKCU\Console\%%%%Startup" /v "DelegationTerminal" /t REG_SZ /d "{E1
 pause
 goto :eof
 
-
 :mainmenu_13
 start %SystemRoot%\TEMP
 start %USERPROFILE%\AppData\Local\Temp
 
 pause
 goto :eof
-
 
 :mainmenu_14
 echo PC시간을 UTC 로설정
