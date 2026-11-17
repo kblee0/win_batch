@@ -390,7 +390,6 @@ cscript "%SystemRoot%\System32\slmgr.vbs" /ipk "VK7JG-NPHTM-C97JM-9MPGT-3V66T"
 cscript "%SystemRoot%\System32\slmgr.vbs" /dlv
 
 pause
-
 goto :eof
 
 :mainmenu_23
@@ -552,5 +551,4 @@ if %errorlevel% equ 1 (
 )
 
 pause
-
 goto :eof
