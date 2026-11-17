@@ -347,7 +347,6 @@ Reg.exe add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OOBE /v BypassNRO /t 
 pause
 goto :eof
 
-
 :mainmenu_19
 dism /online /Cleanup-Image /StartComponentCleanup /ResetBase
 
